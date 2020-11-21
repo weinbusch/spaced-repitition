@@ -35,4 +35,4 @@ csrf.init_app(app)
 
 login_manager.init_app(app)
 
-import routes  # noqa: E402, F401
+import juliano.routes  # noqa: E402, F401
