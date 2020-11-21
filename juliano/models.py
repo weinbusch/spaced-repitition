@@ -31,6 +31,8 @@ class User(UserMixin, Base):
 
 class Item(Base):
 
+    __tablename__ = "items"
+    
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     word = Column(Text)
