@@ -1,4 +1,6 @@
 from flask_login import LoginManager
+from wtforms import Form, StringField, PasswordField
+from wtforms.validators import InputRequired
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .models import User
@@ -10,9 +12,15 @@ login_manager.login_view = "login"
 
 @login_manager.user_loader
 def user_loader(id):
-    from app.app import get_db
+    from juliano.app import get_db
 
     return get_user(get_db(), id)
+
+
+class LoginForm(Form):
+
+    username = StringField("Benutzername", validators=[InputRequired()])
+    password = PasswordField("Passwort", validators=[InputRequired()])
 
 
 def _validate_password(password):
