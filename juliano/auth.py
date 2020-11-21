@@ -1,9 +1,10 @@
 from flask_login import LoginManager
 from wtforms import Form, StringField, PasswordField
-from wtforms.validators import InputRequired
+from wtforms.validators import InputRequired, EqualTo, ValidationError
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .models import User
+from .app import db_session
 
 
 login_manager = LoginManager()
@@ -21,6 +22,18 @@ class LoginForm(Form):
 
     username = StringField("Benutzername", validators=[InputRequired()])
     password = PasswordField("Passwort", validators=[InputRequired()])
+
+
+class RegisterForm(Form):
+
+    username = StringField(validators=[InputRequired()])
+    password = PasswordField(validators=[InputRequired()])
+    repeat_password = PasswordField(validators=[InputRequired(), EqualTo("password")])
+
+    def validate_username(self, username):
+        user = db_session.query(User).filter_by(username=username.data).one_or_none()
+        if user is not None:
+            raise ValidationError("Please choose a different username")
 
 
 def _validate_password(password):

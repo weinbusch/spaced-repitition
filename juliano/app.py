@@ -3,7 +3,7 @@ from werkzeug.local import LocalProxy
 from flask.logging import default_handler
 from flask_wtf.csrf import CSRFProtect
 
-from .auth import login_manager
+
 from .db import connect, disconnect, db_logger
 
 
@@ -32,6 +32,8 @@ def teardown_db(exception):
 
 csrf = CSRFProtect()
 csrf.init_app(app)
+
+from .auth import login_manager  # noqa: E402
 
 login_manager.init_app(app)
 
