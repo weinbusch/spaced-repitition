@@ -23,4 +23,4 @@ class ItemForm(Form):
 
 class TrainForm(Form):
 
-    grade = RadioField(choices=range(1, 6))
+    grade = RadioField(choices=range(6), coerce=int)

@@ -27,7 +27,7 @@ def index():
 def train():
     item = get_next_word(db_session, current_user)
     form = TrainForm(request.form)
-    if request.method == "POST" and form.validate():
+    if item and request.method == "POST" and form.validate():
         update_word(item, **form.data)
         db_session.commit()
         return redirect(url_for("train"))

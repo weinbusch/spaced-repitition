@@ -2,6 +2,7 @@
 {% from "_forms.html" import render_form %}
 
 {% block main %}
+{% if item %}
 <div class="mt-8">
   <div class="text-sm font-semibold leading-tight text-gray-700 text-center">
     Trainiere dieses Wort:
@@ -9,6 +10,13 @@
   <div class="mt-2 flex justify-around">
     <span class="inline-block px-4 p-2 bg-indigo-900 text-gray-100 rounded-full">{{ item.word }}</span>
   </div>
+  {% if item.next_iteration %}
+  <div class="text-sm text-center text-gray-700">
+    
+    <span moment-format="fromNow">{{ item.next_iteration }}</span>
+    
+  </div>
+  {% endif %}
   <div class="mt-8">
     <form action="" method="POST">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -42,4 +50,20 @@
     </form>
   </div>
 </div>
+{% else %}
+<div class="mt-8">
+  <h1 class="text-center text-indigo-700 text-4xl">Geschafft!</h1>
+  <div class="mt-4">
+    Für heute hast Du alle Deine Übungen erledigt und kannst stolz auf
+    Dich sein. Nimm Dir einen Keks und ruhe Dich aus. Morgen geht es
+    weiter.
+  </div>
+  <div class="mt-8 flex justify-around">
+    <a href="{{ url_for('index') }}"
+       class="inline-block px-4 p-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full cursor-pointer">
+      Zur Startseite
+    </a>
+  </div>
+</div>
+{% endif %}
 {% endblock %}

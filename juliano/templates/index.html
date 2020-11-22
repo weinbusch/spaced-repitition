@@ -4,8 +4,9 @@
 {% block main %}
 <div class="mt-8 flex justify-around">
   <a href="{{ url_for('train') }}"
-     class="inline-block bg-orange-600 hover:bg-orange-700 text-gray-100 px-4 p-2 rounded-full cursor-pointer">
-    Übung beginnen
+     class="text-xl inline-block bg-orange-600 hover:bg-orange-700
+    text-gray-100 px-6 p-2 rounded-full cursor-pointer"> Übung
+    beginnen
   </a>
 </div>
 
@@ -36,16 +37,19 @@
           <span class="italic">E</span>
           <span class="font-semibold">{{ item.easiness_factor }}</span>
         </div>
+        {% if item.last_learned %}
         <div class="mx-1">
-          <span class="italic">I</span>
-          <span class="font-semibold">{{ item.inter_repitition_interval }}</span>
+          <span class="italic">L</span>
+          <span class="font-semibold" moment-format="fromNow">{{ item.last_learned }}</span>
         </div>
+        {% endif %}
+        {% if item.next_iteration %}
+        <div class="mx-1">
+          <span class="italic">N</span>
+          <span class="font-semibold" moment-format="fromNow">{{ item.next_iteration }}</span>
+        </div>
+        {% endif %}
       </div>
-      {% if item.last_learned %}
-      <div class="text-sm text-gray-600">
-        <span moment-format="fromNow">{{ item.last_learned }}</span>
-      </div>
-      {% endif %}
     </li>
     {% endfor %}
   </ul>

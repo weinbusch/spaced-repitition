@@ -24,7 +24,7 @@
 <body class="h-screen antialiased text-gray-800 bg-gray-100">
 {% block body %}{% endblock %}
 <script>
-  var locale = "{{ g.locale or 'en' }}";
+  var locale = "{{ g.locale or 'de' }}";
   moment.locale(locale);
 
   var momentObjects = document.querySelectorAll("span[moment-format]");
