@@ -43,6 +43,7 @@ class Item(Base):
     easiness_factor = Column(Float, default=2.5)
     inter_repitition_interval = Column(Interval, default=datetime.timedelta())
     last_learned = Column(DateTime)
+    next_iteration = Column(DateTime)
 
     __table_args__ = (UniqueConstraint("user_id", "word"),)
 
