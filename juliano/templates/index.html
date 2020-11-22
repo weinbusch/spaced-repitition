@@ -2,29 +2,49 @@
 {% from "_forms.html" import render_form %}
 
 {% block main %}
-{{ render_form(form) }}
-<p>
-  <a href="{{ url_for('train') }}">Train word</a>
-</p>
-<ul>
-  {% for item in items %}
-  <li>
-    <span>{{ item.word }}</span>
-    <table>
-      <tr>
-        <td>N</td>
-        <td>{{ item.repitition_number }}</td>
-      </tr>
-      <tr>
-        <td>E</td>
-        <td>{{ item.easiness_factor }}</td>
-      </tr>
-      <tr>
-        <td>I</td>
-        <td>{{ item.inter_repitition_interval }}</td>
-      </tr>
-    </table>
-  </li>
-  {% endfor %}
-</ul>
+<div class="mt-8 flex justify-around">
+  <a href="{{ url_for('train') }}"
+     class="inline-block bg-orange-600 hover:bg-orange-700 text-gray-100 px-4 p-2 rounded-full cursor-pointer">
+    Übung beginnen
+  </a>
+</div>
+
+<div class="mt-8">
+  <h1 class="font-sm font-semibold leading-tight text-gray-700">
+    Füge ein neues Wort zu Deiner Liste hinzu:
+  </h1>
+  {{ render_form(form, show_labels=False) }}
+</div>
+
+{% if items.count() %}
+<div class="mt-8">
+  <h1 class="font-sm font-semibold leading-tight text-gray-700">
+    Hier ist eine Liste der Wörter, die Du bereits eingegeben hast:
+  </h1>
+  <ul class="-m-2 mt-2 flex flex-wrap">
+    {% for item in items %}
+    <li class="flex flex-col items-center p-2 rounded-lg bg-gray-300 m-2 w-40">
+      <div>
+        <span class="inline-block px-4 p-2 bg-indigo-900 text-gray-100 rounded-full">{{ item.word }}</span>
+      </div>
+      <div class="flex flex-wrap -mx-2 text-sm text-gray-600 mt-1">
+        <div class="mx-1">
+          <span class="italic">N</span>
+          <span class="font-semibold">{{ item.repitition_number }}</span>
+        </div>
+        <div class="mx-1">
+          <span class="italic">E</span>
+          <span class="font-semibold">{{ item.easiness_factor }}</span>
+        </div>
+        <div class="mx-1">
+          <span class="italic">I</span>
+          <span class="font-semibold">{{ item.inter_repitition_interval }}</span>
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
 {% endblock %}

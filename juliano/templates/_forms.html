@@ -1,39 +1,45 @@
 
-{% macro render_field(field) %}
-<dt>{{ field.label }}</dt>
-<dd>
-  {% if field.entries or field.form %}
-  {{ render_form_fields(field) }}
-  {% else %}
-  <div>
-    {{ field }}
-    {% for e in field.errors %}
-    <p style="color:red">{{ e }}</p>
-    {% endfor %}
-  </div>
+{% macro render_field(field, show_labels=show_labels) %}
+<div class="mt-2">
+  {% if show_labels %}
+  <div class="text-sm font-semibold mb-1">{{ field.label }}</div>
   {% endif %}
-</dd>
+  <div>
+    {% if field.entries or field.form %}
+    {{ render_form_fields(field) }}
+    {% else %}
+    <div>
+      {{ field(class="p-2 border rounded-md w-full") }}
+      {% for e in field.errors %}
+      <div class="mt-1">{{ e }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
 {% endmacro %}
 
 
-{% macro render_form_fields(form) %}
-<dl>
+{% macro render_form_fields(form, show_labels=show_labels) %}
+<div>
   {% for field in form %}
-  {{ render_field(field) }}
+  {{ render_field(field, show_labels=show_labels) }}
   {% endfor %}
-</dl>
+</div>
 {% endmacro %}
 
 
-{% macro render_form(form, method="POST", submit_text="Speichern") %}
+{% macro render_form(form, method="POST", submit_text="Speichern", show_labels=True) %}
 <form action="" method="{{ method }}">
   {% if method == "POST" %}
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   {% endif %}
-  {{ render_form_fields(form) }}
-  <p>
-    <input type="Submit" value="{{ submit_text }}">
-  </p>
+  {{ render_form_fields(form, show_labels=show_labels) }}
+  <div class="mt-2 flex justify-around">
+    <input type="Submit"
+           value="{{ submit_text }}"
+           class="inline-block p-2 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full cursor-pointer">
+  </div>
 </form>
 {% endmacro %}
 

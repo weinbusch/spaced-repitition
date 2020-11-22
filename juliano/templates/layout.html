@@ -1,9 +1,15 @@
-<title>Juliano</title>
+{% extends "base.html" %}
 
-<header>
-  {{ current_user.username }}
+{% block body %}
+<header class="text-gray-600">
+  <div class="max-w-xl mx-auto px-2">
+    <div class="py-2 border-b">
+      Hallo, <span class="font-semibold">{{ current_user.username }}</span>!
+    </div>
+  </div>
 </header>
 
-<main>
+<main class="max-w-xl mx-auto px-2">
   {% block main %}{% endblock %}
 </main>
+{% endblock %}

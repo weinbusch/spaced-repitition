@@ -25,13 +25,13 @@ def index():
 @app.route("/train", methods=["GET", "POST"])
 @login_required
 def train():
-    word = get_next_word(db_session, current_user)
+    item = get_next_word(db_session, current_user)
     form = TrainForm(request.form)
     if request.method == "POST" and form.validate():
-        update_word(word, **form.data)
+        update_word(item, **form.data)
         db_session.commit()
         return redirect(url_for("train"))
-    return render_template("train.html", word=word, form=form)
+    return render_template("train.html", item=item, form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
