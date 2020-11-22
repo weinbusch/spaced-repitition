@@ -41,6 +41,11 @@
           <span class="font-semibold">{{ item.inter_repitition_interval }}</span>
         </div>
       </div>
+      {% if item.last_learned %}
+      <div class="text-sm text-gray-600">
+        <span moment-format="fromNow">{{ item.last_learned }}</span>
+      </div>
+      {% endif %}
     </li>
     {% endfor %}
   </ul>

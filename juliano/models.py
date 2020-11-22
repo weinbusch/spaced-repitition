@@ -42,6 +42,7 @@ class Item(Base):
     repitition_number = Column(Integer, default=0)
     easiness_factor = Column(Float, default=2.5)
     inter_repitition_interval = Column(Interval, default=datetime.timedelta())
+    last_learned = Column(DateTime)
 
     __table_args__ = (UniqueConstraint("user_id", "word"),)
 
