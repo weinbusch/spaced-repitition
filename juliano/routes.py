@@ -1,15 +1,24 @@
 from flask import render_template, request, redirect, url_for
 
-from flask_login import login_required, login_user
+from flask_login import login_required, login_user, current_user
 
 from .app import app, db_session
+from .models import Item
+from .forms import ItemForm
 from .auth import get_authenticated_user, LoginForm, create_user, RegisterForm
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
-    return render_template("index.html")
+    form = ItemForm(request.form)
+    items = db_session.query(Item).filter_by(user=current_user)
+    if request.method == "POST" and form.validate():
+        item = Item(word=form.word.data, user=current_user)
+        db_session.add(item)
+        db_session.commit()
+        return redirect(url_for("index"))
+    return render_template("index.html", items=items, form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
