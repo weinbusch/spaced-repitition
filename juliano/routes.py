@@ -13,7 +13,7 @@ from .spaced_repitition import get_next_word, update_word
 @login_required
 def index():
     form = ItemForm(request.form)
-    items = db_session.query(Item).filter_by(user=current_user)
+    items = db_session.query(Item).filter_by(user=current_user).all()
     if request.method == "POST" and form.validate():
         item = Item(word=form.word.data, user=current_user)
         db_session.add(item)

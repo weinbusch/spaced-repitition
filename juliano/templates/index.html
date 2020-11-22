@@ -2,6 +2,7 @@
 {% from "_forms.html" import render_form %}
 
 {% block main %}
+{% if items %}
 <div class="mt-8 flex justify-around">
   <a href="{{ url_for('train') }}"
      class="text-xl inline-block bg-orange-600 hover:bg-orange-700
@@ -9,6 +10,7 @@
     beginnen
   </a>
 </div>
+{% endif %}
 
 <div class="mt-8">
   <h1 class="font-sm font-semibold leading-tight text-gray-700">
@@ -17,7 +19,7 @@
   {{ render_form(form, show_labels=False) }}
 </div>
 
-{% if items.count() %}
+{% if items %}
 <div class="mt-8">
   <h1 class="font-sm font-semibold leading-tight text-gray-700">
     Hier ist eine Liste der Wörter, die Du bereits eingegeben hast:
