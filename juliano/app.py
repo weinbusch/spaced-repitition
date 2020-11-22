@@ -20,7 +20,8 @@ db_session = LocalProxy(get_db)
 
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "secret_key"
+#app.config["SECRET_KEY"] = "secret_key"
+app.config["SECRET_KEY"] = open("secret").read()
 
 
 @app.teardown_appcontext
