@@ -1,4 +1,4 @@
-from wtforms import Form, StringField
+from wtforms import Form, StringField, RadioField
 from wtforms.validators import InputRequired, ValidationError
 
 from flask_login import current_user
@@ -19,3 +19,8 @@ class ItemForm(Form):
         )
         if item is not None:
             raise ValidationError("This word already is in your dictionary")
+
+
+class TrainForm(Form):
+
+    grade = RadioField(choices=range(1, 6))

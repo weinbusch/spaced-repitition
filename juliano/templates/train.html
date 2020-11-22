@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% from "_forms.html" import render_form %}
+
+{% block main %}
+<h1>{{ word.word }}</h1>
+{{ render_form(form) }}
+<p>
+  <a href="{{ url_for('index') }}">Index</a>
+</p>
+{% endblock %}

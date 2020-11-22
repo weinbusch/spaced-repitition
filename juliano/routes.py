@@ -4,8 +4,9 @@ from flask_login import login_required, login_user, current_user
 
 from .app import app, db_session
 from .models import Item
-from .forms import ItemForm
+from .forms import ItemForm, TrainForm
 from .auth import get_authenticated_user, LoginForm, create_user, RegisterForm
+from .spaced_repitition import get_next_word, update_word
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -19,6 +20,18 @@ def index():
         db_session.commit()
         return redirect(url_for("index"))
     return render_template("index.html", items=items, form=form)
+
+
+@app.route("/train", methods=["GET", "POST"])
+@login_required
+def train():
+    word = get_next_word(db_session, current_user)
+    form = TrainForm(request.form)
+    if request.method == "POST" and form.validate():
+        update_word(word, **form.data)
+        db_session.commit()
+        return redirect(url_for("train"))
+    return render_template("train.html", word=word, form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])

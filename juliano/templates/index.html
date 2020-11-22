@@ -3,6 +3,9 @@
 
 {% block main %}
 {{ render_form(form) }}
+<p>
+  <a href="{{ url_for('train') }}">Train word</a>
+</p>
 <ul>
   {% for item in items %}
   <li>
