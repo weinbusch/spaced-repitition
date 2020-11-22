@@ -1,13 +1,19 @@
 {% extends "base.html" %}
 
 {% block body %}
+{% if current_user.is_authenticated %}
 <header class="text-gray-600">
   <div class="max-w-xl mx-auto px-2">
-    <div class="py-2 border-b">
-      Hallo, <span class="font-semibold">{{ current_user.username }}</span>!
+    <div class="py-2 border-b flex justify-between">
+      <div>
+        Hallo, <span class="font-semibold">{{ current_user.username }}</span>!
+      </div>
+      <div>
+        <a class="hover:text-indigo-600 hover:underline" href="{{ url_for('logout') }}">Abmelden/Benutzer wechseln</a>
     </div>
   </div>
 </header>
+{% endif %}
 
 <main class="max-w-xl mx-auto px-2">
   {% block main %}{% endblock %}

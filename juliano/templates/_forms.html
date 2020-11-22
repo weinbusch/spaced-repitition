@@ -1,8 +1,8 @@
 
 {% macro render_field(field, show_labels=show_labels) %}
-<div class="mt-2">
+<div class="mt-4">
   {% if show_labels %}
-  <div class="text-sm font-semibold mb-1">{{ field.label }}</div>
+  <div class="text-sm font-semibold mb-1 text-gray-600">{{ field.label }}</div>
   {% endif %}
   <div>
     {% if field.entries or field.form %}
@@ -11,7 +11,7 @@
     <div>
       {{ field(class="p-2 border rounded-md w-full") }}
       {% for e in field.errors %}
-      <div class="mt-1">{{ e }}</div>
+      <div class="mt-1 leading-tight text-red-800">{{ e }}</div>
       {% endfor %}
     </div>
     {% endif %}
@@ -35,7 +35,7 @@
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   {% endif %}
   {{ render_form_fields(form, show_labels=show_labels) }}
-  <div class="mt-2 flex justify-around">
+  <div class="mt-6 flex justify-around">
     <input type="Submit"
            value="{{ submit_text }}"
            class="inline-block p-2 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full cursor-pointer">

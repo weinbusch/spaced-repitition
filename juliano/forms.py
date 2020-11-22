@@ -18,7 +18,7 @@ class ItemForm(Form):
             .one_or_none()
         )
         if item is not None:
-            raise ValidationError("This word already is in your dictionary")
+            raise ValidationError("Dieses Wort ist bereits in Deiner Sammlung.")
 
 
 class TrainForm(Form):

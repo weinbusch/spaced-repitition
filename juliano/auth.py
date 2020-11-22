@@ -1,6 +1,6 @@
 from flask_login import LoginManager
 from wtforms import Form, StringField, PasswordField
-from wtforms.validators import InputRequired, EqualTo, ValidationError
+from wtforms.validators import InputRequired, EqualTo, ValidationError, Length
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .models import User
@@ -26,19 +26,36 @@ class LoginForm(Form):
 
 class RegisterForm(Form):
 
-    username = StringField(validators=[InputRequired()])
-    password = PasswordField(validators=[InputRequired()])
-    repeat_password = PasswordField(validators=[InputRequired(), EqualTo("password")])
+    username = StringField("Benutzername", validators=[InputRequired()])
+    password = PasswordField(
+        "Passwort",
+        validators=[
+            InputRequired(),
+            Length(
+                max=64,
+                message="Das Passwort ist zu lang (Kannst Du Dir das wirklich merken?)",
+            ),
+        ],
+    )
+    repeat_password = PasswordField(
+        "Passwort wiederholen",
+        validators=[
+            InputRequired(),
+            EqualTo("password", message="Die Passwörter müssen übereinstimmen."),
+        ],
+    )
 
     def validate_username(self, username):
         user = db_session.query(User).filter_by(username=username.data).one_or_none()
         if user is not None:
-            raise ValidationError("Please choose a different username")
+            raise ValidationError("Bitte wähle einen anderen Benutzernamen.")
 
 
 def _validate_password(password):
     if len(password) > 64:
-        raise ValueError("Password is too long.")
+        raise ValueError(
+            "Das Passwort ist zu lang (Kannst Du Dir das wirklich merken?)"
+        )
 
 
 def create_password_hash(password):
