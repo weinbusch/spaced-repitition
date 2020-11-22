@@ -3,8 +3,10 @@ import datetime
 from sqlalchemy import (
     Column,
     Integer,
-    DateTime,
+    Float,
     Text,
+    DateTime,
+    Interval,
     ForeignKey,
     UniqueConstraint,
 )
@@ -32,11 +34,14 @@ class User(UserMixin, Base):
 class Item(Base):
 
     __tablename__ = "items"
-    
+
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     word = Column(Text)
     created = Column(DateTime, default=datetime.datetime.utcnow)
+    repitition_number = Column(Integer, default=0)
+    easiness_factor = Column(Float, default=2.5)
+    inter_repitition_interval = Column(Interval, default=datetime.timedelta())
 
     __table_args__ = (UniqueConstraint("user_id", "word"),)
 

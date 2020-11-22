@@ -7,6 +7,20 @@
   {% for item in items %}
   <li>
     <span>{{ item.word }}</span>
+    <table>
+      <tr>
+        <td>N</td>
+        <td>{{ item.repitition_number }}</td>
+      </tr>
+      <tr>
+        <td>E</td>
+        <td>{{ item.easiness_factor }}</td>
+      </tr>
+      <tr>
+        <td>I</td>
+        <td>{{ item.inter_repitition_interval }}</td>
+      </tr>
+    </table>
   </li>
   {% endfor %}
 </ul>
