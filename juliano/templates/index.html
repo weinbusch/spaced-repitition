@@ -2,13 +2,22 @@
 {% from "_forms.html" import render_form %}
 
 {% block main %}
-{% if items %}
+{% if todo_items %}
+{% set count = todo_items | length %}
 <div class="mt-8 flex justify-around">
-  <a href="{{ url_for('train') }}"
-     class="text-xl inline-block bg-orange-600 hover:bg-orange-700
-    text-gray-100 px-6 p-2 rounded-full cursor-pointer"> Übung
-    beginnen
-  </a>
+    <a href="{{ url_for('train') }}"
+       class="flex flex-col items-center px-10 py-4 
+              bg-orange-600 hover:bg-orange-700 rounded-full 
+              text-gray-100 cursor-pointer">
+      <p class="text-2xl leading-tight">Übung beginnen</p>
+      <p class="text-sm leading-tight">
+        {% if count == 1 %}
+        <span>{{ count }}</span> anstehende Übung.
+        {% else %}
+        <span>{{ count }}</span> anstehende Übungen.
+        {% endif %}
+      </p>
+    </a>
 </div>
 {% endif %}
 
@@ -24,20 +33,22 @@
   <h1 class="font-sm font-semibold leading-tight text-gray-700">
     Hier ist eine Liste der Wörter, die Du bereits eingegeben hast:
   </h1>
-  <ul class="-m-2 mt-2 flex flex-wrap">
+  <ul class="flex flex-wrap justify-between -m-2 mt-2">
     {% for item in items %}
-    <li class="flex flex-col items-center p-2 rounded-lg bg-gray-300 m-2 w-40">
-      <div>
-        <span class="inline-block px-4 p-2 bg-indigo-900 text-gray-100 rounded-full">{{ item.word }}</span>
+    <li class="flex flex-col flex-grow m-2 py-2 px-4 bg-gray-200 rounded-lg">
+      <div class="">
+        <div class="pb-1 border-b border-gray-300 text-center text-lg text-indigo-700 ">{{ item.word }}</div>
       </div>
-      <div class="flex flex-wrap -mx-2 text-sm text-gray-600 mt-1">
-        <div class="mx-1">
-          <span class="italic">N</span>
-          <span class="font-semibold">{{ item.repitition_number }}</span>
-        </div>
-        <div class="mx-1">
-          <span class="italic">E</span>
-          <span class="font-semibold">{{ item.easiness_factor }}</span>
+      <div class="flex flex-col items-center -mx-1 mt-1 text-sm text-gray-600">
+        <div class="flex">
+          <div class="mx-1">
+            <span class="italic">N</span>
+            <span class="font-semibold">{{ item.repitition_number }}</span>
+          </div>
+          <div class="mx-1">
+            <span class="italic">E</span>
+            <span class="font-semibold">{{ "{:.3}".format(item.easiness_factor) }}</span>
+          </div>
         </div>
         {% if item.last_learned %}
         <div class="mx-1">

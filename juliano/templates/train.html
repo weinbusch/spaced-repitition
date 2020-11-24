@@ -2,7 +2,8 @@
 {% from "_forms.html" import render_form %}
 
 {% block main %}
-{% if item %}
+{% if items %}
+{% set item = items[0] %}
 <div class="mt-8">
   <div class="text-sm font-semibold leading-tight text-gray-700 text-center">
     Trainiere dieses Wort:
@@ -24,9 +25,9 @@
         <div class="text-sm font-semibold leading-tight text-gray-700 text-center">
           Bewerte Deine Leistung:
         </div>
-        <div class="flex justify-center -mx-2 mt-2">
+        <div class="flex flex-wrap justify-center -mx-1 mt-2">
           {% for radio in form.grade %}
-          <label for={{ radio.id }} class="mx-2 flex flex-col items-center border rounded-lg px-6 py-2">
+          <label for={{ radio.id }} class="m-1 flex flex-col items-center border rounded-lg px-6 py-2">
             {{ radio }}
             <span>{{ radio.label.text }}</span>
           </label>
