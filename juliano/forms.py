@@ -23,4 +23,8 @@ class ItemForm(Form):
 
 class TrainForm(Form):
 
-    grade = RadioField(choices=range(6), coerce=int)
+    grade = RadioField(
+        choices=range(6),
+        coerce=int,
+        validators=[InputRequired(message="Bitte triff eine Auswahl.")],
+    )
