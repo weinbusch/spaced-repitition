@@ -8,7 +8,7 @@
   {% set count = todo_items | length %}
   <a href="{{ url_for('train') }}"
      class="flex flex-col items-center px-10 py-4 
-            bg-orange-600 hover:bg-orange-700 rounded-full 
+            bg-yellow-600 hover:bg-yellow-700 rounded-full 
             text-gray-100 cursor-pointer">
 
     <p class="text-2xl leading-tight">Übung beginnen</p>
@@ -23,7 +23,7 @@
 
   </a>
   {% else %}
-  <div class="inline-block px-10 py-4 border border-orange-600 text-orange-600 rounded-full
+  <div class="inline-block px-10 py-4 border border-yellow-600 text-yellow-600 rounded-full
               cursor-pointer text-sm font-semibold leading-tight">
     Heute stehen keine Übungen an.
   </div>
@@ -33,7 +33,7 @@
 
 <div class="mt-8">
   {% if not items %}
-  <h1 class="text-center text-2xl font-semibold leading tight text-orange-700">
+  <h1 class="text-center text-2xl font-semibold leading tight text-yellow-700">
     Herzlich Willkommen
   </h1>
   <p class="mt-2 text-center leading-tight text-gray-700">
