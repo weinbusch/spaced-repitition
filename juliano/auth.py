@@ -21,7 +21,16 @@ def user_loader(id):
 class LoginForm(Form):
 
     username = StringField("Benutzername", validators=[InputRequired()])
-    password = PasswordField("Passwort", validators=[InputRequired()])
+    password = PasswordField(
+        "Passwort",
+        validators=[
+            InputRequired(),
+            Length(
+                max=64,
+                message="Das Passwort ist zu lang (Kannst Du Dir das wirklich merken?)",
+            ),
+        ],
+    )
 
 
 class RegisterForm(Form):
@@ -64,7 +73,10 @@ def create_password_hash(password):
 
 
 def verify_password(hash, password):
-    _validate_password(password)
+    try:
+        _validate_password(password)
+    except ValueError:
+        return False
     return check_password_hash(hash, password)
 
 
