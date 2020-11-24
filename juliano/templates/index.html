@@ -2,35 +2,57 @@
 {% from "_forms.html" import render_form %}
 
 {% block main %}
-{% if todo_items %}
-{% set count = todo_items | length %}
-<div class="mt-8 flex justify-around">
-    <a href="{{ url_for('train') }}"
-       class="flex flex-col items-center px-10 py-4 
-              bg-orange-600 hover:bg-orange-700 rounded-full 
-              text-gray-100 cursor-pointer">
-      <p class="text-2xl leading-tight">Übung beginnen</p>
-      <p class="text-sm leading-tight">
-        {% if count == 1 %}
-        <span>{{ count }}</span> anstehende Übung.
-        {% else %}
-        <span>{{ count }}</span> anstehende Übungen.
-        {% endif %}
-      </p>
-    </a>
+{% if items %}
+<div class="mt-8 flex justify-around pb-8 border-b">
+  {% if todo_items %}
+  {% set count = todo_items | length %}
+  <a href="{{ url_for('train') }}"
+     class="flex flex-col items-center px-10 py-4 
+            bg-orange-600 hover:bg-orange-700 rounded-full 
+            text-gray-100 cursor-pointer">
+
+    <p class="text-2xl leading-tight">Übung beginnen</p>
+
+    <p class="text-sm leading-tight">
+      {% if count == 1 %}
+      <span>{{ count }}</span> anstehende Übung.
+      {% else %}
+      <span>{{ count }}</span> anstehende Übungen.
+      {% endif %}
+    </p>
+
+  </a>
+  {% else %}
+  <div class="inline-block px-10 py-4 border border-orange-600 text-orange-600 rounded-full
+              cursor-pointer text-sm font-semibold leading-tight">
+    Heute stehen keine Übungen an.
+  </div>
+  {% endif %}
 </div>
 {% endif %}
 
 <div class="mt-8">
-  <h1 class="font-sm font-semibold leading-tight text-gray-700">
-    Füge ein neues Wort zu Deiner Liste hinzu:
+  {% if not items %}
+  <h1 class="text-center text-2xl font-semibold leading tight text-orange-700">
+    Herzlich Willkommen
   </h1>
+  <p class="mt-2 text-center leading-tight text-gray-700">
+    Du scheinst neu hier zu sein.
+  </p>
+  <p class="mt-2 text-center leading-tight text-gray-700">
+    Fange mit Juliano an, indem Du ein neues Wort zu Deiner Liste hinzufügst:
+  </p>
+  {% else %}
+  <p class="leading-tight text-gray-700">
+    Füge ein weiteres Wort zu Deiner Liste hinzu:
+  </p>
+  {% endif %}
   {{ render_form(form, show_labels=False) }}
 </div>
 
 {% if items %}
 <div class="mt-8">
-  <h1 class="font-sm font-semibold leading-tight text-gray-700">
+  <h1 class="leading-tight text-gray-700">
     Hier ist eine Liste der Wörter, die Du bereits eingegeben hast:
   </h1>
   <ul class="flex flex-wrap justify-between -m-2 mt-2">

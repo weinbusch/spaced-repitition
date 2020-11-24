@@ -3,14 +3,14 @@
 
 {% block main %}
 <div class="flex justify-center">
-  <div class="max-w-lg mt-16">
-    <h1 class="text-indigo-800 text-4xl text-center">Willkommen zu Juliano!</h1>
+  <div class="max-w-lg mt-4 px-2">
+    <h1 class="text-indigo-800 text-4xl text-center leading-tight">Willkommen zu Juliano!</h1>
     <div class="mt-8 text-sm font-semibold text-gray-600 leading-tight">
       Registriere Dich mit einem Nutzernamen und einem Passwort, um Juliano zu nutzen.
     </div>
     {{ render_form(form, submit_text="Jetzt registrieren") }}
-    <div class="mt-8 text-gray-600 text-center">- oder, falls Du bereits registriert bist -</div>
-    <div class="mt-8 flex justify-center">
+    <div class="mt-4 text-gray-600 text-center">- oder, falls Du bereits registriert bist -</div>
+    <div class="mt-4 flex justify-center">
       <a class="inline-block px-4 p-2 bg-green-500 hover:bg-green-600 text-white rounded-full cursor-pointer"
          href="{{ url_for('login') }}">
         Melde Dich hier an
