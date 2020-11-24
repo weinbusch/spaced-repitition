@@ -21,20 +21,26 @@ def update_word(word, grade):
 
     https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm
     """
-    if grade >= 3:
-        if word.repitition_number == 0:
-            word.inter_repitition_interval = datetime.timedelta(days=1)
-        elif word.repitition_number == 1:
-            word.inter_repitition_interval = datetime.timedelta(days=1)  # deviating from SM-2
-        else:
-            word.inter_repitition_interval = word.inter_repitition_interval * word.easiness_factor
-        word.easiness_factor = word.easiness_factor + (0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02))
-        if word.easiness_factor < 1.3:
-            word.easiness_factor = 1.3
-        word.repitition_number += 1
-    else:
-        word.repitition_number = 0
+    if word.repitition_number == 0:
         word.inter_repitition_interval = datetime.timedelta(days=1)
+    elif word.repitition_number == 1:
+        word.inter_repitition_interval = datetime.timedelta(
+            days=1
+        )  # deviating from SM-2
+    else:
+        word.inter_repitition_interval = (
+            word.inter_repitition_interval * word.easiness_factor
+        )
+    word.easiness_factor = word.easiness_factor + (
+        0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02)
+    )
+    if word.easiness_factor < 1.3:
+        word.easiness_factor = 1.3
+
+    word.repitition_number += 1
+
     word.last_learned = datetime.datetime.utcnow()
+
     word.next_iteration = word.last_learned + word.inter_repitition_interval
+
     return word
