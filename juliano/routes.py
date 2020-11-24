@@ -6,7 +6,7 @@ from .app import app, db_session
 from .models import Item
 from .forms import ItemForm, TrainForm
 from .auth import get_authenticated_user, LoginForm, create_user, RegisterForm
-from .spaced_repitition import update_word, get_items_for_user
+from .spaced_repitition import update_item, get_items_for_user
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -29,7 +29,7 @@ def train():
     form = TrainForm(request.form)
     items = get_items_for_user(db_session, user=current_user, todo=True).all()
     if items and request.method == "POST" and form.validate():
-        update_word(items[0], **form.data)
+        update_item(items[0], **form.data)
         db_session.commit()
         return redirect(url_for("train"))
     return render_template("train.html", items=items, form=form)

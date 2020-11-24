@@ -20,31 +20,31 @@ def get_items_for_user(db_session, user, todo=False):
     return query
 
 
-def update_word(word, grade):
+def update_item(item, grade):
     """Spaced repition algorithm
 
     https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm
     """
-    if word.repitition_number == 0:
-        word.inter_repitition_interval = datetime.timedelta(days=1)
-    elif word.repitition_number == 1:
-        word.inter_repitition_interval = datetime.timedelta(
+    if item.repitition_number == 0:
+        item.inter_repitition_interval = datetime.timedelta(days=1)
+    elif item.repitition_number == 1:
+        item.inter_repitition_interval = datetime.timedelta(
             days=1
         )  # deviating from SM-2
     else:
-        word.inter_repitition_interval = (
-            word.inter_repitition_interval * word.easiness_factor
+        item.inter_repitition_interval = (
+            item.inter_repitition_interval * item.easiness_factor
         )
-    word.easiness_factor = word.easiness_factor + (
+    item.easiness_factor = item.easiness_factor + (
         0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02)
     )
-    if word.easiness_factor < 1.3:
-        word.easiness_factor = 1.3
+    if item.easiness_factor < 1.3:
+        item.easiness_factor = 1.3
 
-    word.repitition_number += 1
+    item.repitition_number += 1
 
-    word.last_learned = datetime.datetime.utcnow()
+    item.last_learned = datetime.datetime.utcnow()
 
-    word.next_iteration = word.last_learned + word.inter_repitition_interval
+    item.next_iteration = item.last_learned + item.inter_repitition_interval
 
-    return word
+    return item
