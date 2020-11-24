@@ -4,16 +4,20 @@ from sqlalchemy import or_
 from .models import Item
 
 
-def get_next_word(db_session, current_user):
-    return (
-        db_session.query(Item)
-        .filter(Item.user == current_user)
-        .filter(or_(
-            Item.next_iteration <= datetime.datetime.utcnow(),
-            Item.next_iteration.is_(None)))
-        .order_by(Item.next_iteration)
-        .first()
-    )
+def get_items_for_user(db_session, user, todo=False):
+    query = db_session.query(Item).filter(Item.user == user)
+
+    if todo:
+        query = query.filter(
+            or_(
+                Item.next_iteration <= datetime.datetime.utcnow(),
+                Item.next_iteration.is_(None),
+            )
+        )
+
+    query = query.order_by(Item.next_iteration)
+
+    return query
 
 
 def update_word(word, grade):

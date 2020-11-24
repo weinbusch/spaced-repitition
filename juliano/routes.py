@@ -6,32 +6,33 @@ from .app import app, db_session
 from .models import Item
 from .forms import ItemForm, TrainForm
 from .auth import get_authenticated_user, LoginForm, create_user, RegisterForm
-from .spaced_repitition import get_next_word, update_word
+from .spaced_repitition import update_word, get_items_for_user
 
 
 @app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
     form = ItemForm(request.form)
-    items = db_session.query(Item).filter_by(user=current_user).all()
+    items = get_items_for_user(db_session, user=current_user).all()
+    todo_items = get_items_for_user(db_session, user=current_user, todo=True).all()
     if request.method == "POST" and form.validate():
         item = Item(word=form.word.data, user=current_user)
         db_session.add(item)
         db_session.commit()
         return redirect(url_for("index"))
-    return render_template("index.html", items=items, form=form)
+    return render_template("index.html", items=items, form=form, todo_items=todo_items)
 
 
 @app.route("/train", methods=["GET", "POST"])
 @login_required
 def train():
-    item = get_next_word(db_session, current_user)
     form = TrainForm(request.form)
-    if item and request.method == "POST" and form.validate():
-        update_word(item, **form.data)
+    items = get_items_for_user(db_session, user=current_user, todo=True).all()
+    if items and request.method == "POST" and form.validate():
+        update_word(items[0], **form.data)
         db_session.commit()
         return redirect(url_for("train"))
-    return render_template("train.html", item=item, form=form)
+    return render_template("train.html", items=items, form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
