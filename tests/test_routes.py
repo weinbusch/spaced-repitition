@@ -21,6 +21,13 @@ def test_index_view_create_item(flask_client, session):
     assert session.query(Item).filter_by(word="foo").count() == 1
 
 
+def test_create_item_with_very_long_word(flask_client, session):
+    response = flask_client.post(
+        url_for("index"), data={"word": "a very long word" * 1000}
+    )
+    assert response.status_code == 200
+
+
 def test_train_view_shows_next_item(flask_client, session):
     session.add(Item(user_id=1, word="foobarbaz"))
     session.commit()
