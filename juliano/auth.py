@@ -20,7 +20,13 @@ def user_loader(id):
 
 class LoginForm(Form):
 
-    username = StringField("Benutzername", validators=[InputRequired()])
+    username = StringField(
+        "Benutzername",
+        validators=[
+            InputRequired(),
+            Length(max=64, message="Dieser Name ist zu lang."),
+        ],
+    )
     password = PasswordField(
         "Passwort",
         validators=[
@@ -33,9 +39,23 @@ class LoginForm(Form):
     )
 
 
+def validate_unique_username(form, field):
+    if db_session.query(User).filter_by(username=field.data).count():
+        raise ValidationError(
+            "Bitte wähle einen anderen Benutzernamen. Dieser Name existiert bereits. "
+        )
+
+
 class RegisterForm(Form):
 
-    username = StringField("Benutzername", validators=[InputRequired()])
+    username = StringField(
+        "Benutzername",
+        validators=[
+            InputRequired(),
+            Length(max=64, message="Dieser Name ist zu lang."),
+            validate_unique_username,
+        ],
+    )
     password = PasswordField(
         "Passwort",
         validators=[
@@ -53,11 +73,6 @@ class RegisterForm(Form):
             EqualTo("password", message="Die Passwörter müssen übereinstimmen."),
         ],
     )
-
-    def validate_username(self, username):
-        user = db_session.query(User).filter_by(username=username.data).one_or_none()
-        if user is not None:
-            raise ValidationError("Bitte wähle einen anderen Benutzernamen.")
 
 
 def _validate_password(password):
