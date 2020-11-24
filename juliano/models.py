@@ -41,7 +41,7 @@ class Item(Base):
     created = Column(DateTime, default=datetime.datetime.utcnow)
     repitition_number = Column(Integer, default=0)
     easiness_factor = Column(Float, default=2.5)
-    inter_repitition_interval = Column(Interval, default=datetime.timedelta())
+    inter_repitition_interval = Column(Interval, default=datetime.timedelta(days=1))
     last_learned = Column(DateTime)
     next_iteration = Column(DateTime)
 
