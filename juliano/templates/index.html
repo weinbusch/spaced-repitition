@@ -3,29 +3,34 @@
 
 {% block main %}
 {% if items %}
-<div class="mt-8 flex justify-around pb-8 border-b">
+<div class="flex flex-col items-center py-8">
   {% if todo_items %}
-  {% set count = todo_items | length %}
   <a href="{{ url_for('train') }}"
-     class="flex flex-col items-center px-10 py-4 
-            bg-yellow-600 hover:bg-yellow-700 rounded-full 
-            text-gray-100 cursor-pointer">
-
-    <p class="text-2xl leading-tight">Übung beginnen</p>
-
-    <p class="text-sm leading-tight">
-      {% if count == 1 %}
-      <span>{{ count }}</span> anstehende Übung.
-      {% else %}
-      <span>{{ count }}</span> anstehende Übungen.
-      {% endif %}
-    </p>
-
+     class="px-10 py-4 bg-yellow-600 hover:bg-yellow-700 rounded-full text-white cursor-pointer">
+    <div class="flex flex-col items-center">
+      <p class="text-2xl leading-tight">
+        Übung beginnen
+      </p>
+      <p class="text-sm leading-tight">
+        {% set count = todo_items | length %}
+        {% if count == 1 %}
+        <span>{{ count }}</span> anstehende Übung.
+        {% else %}
+        <span>{{ count }}</span> anstehende Übungen.
+        {% endif %}
+      </p>
+    </div>
   </a>
+  <div class="mt-16">
+    <p class="text-center text-gray-600 italic">
+      - oder -
+    </p>
+  </div>
   {% else %}
-  <div class="inline-block px-10 py-4 border border-yellow-600 text-yellow-600 rounded-full
-              cursor-pointer text-sm font-semibold leading-tight">
-    Heute stehen keine Übungen an.
+  <div class="inline-block px-10 py-4 border border-yellow-600 text-yellow-600 rounded-full">
+    <p class="text-sm font-semibold leading-tight">
+      Heute stehen keine Übungen an.
+    </p>
   </div>
   {% endif %}
 </div>
@@ -36,14 +41,14 @@
   <h1 class="text-center text-2xl font-semibold leading tight text-yellow-700">
     Herzlich Willkommen
   </h1>
-  <p class="mt-2 text-center leading-tight text-gray-700">
+  <p class="mt-2 text-center leading-tight">
     Du scheinst neu hier zu sein.
   </p>
-  <p class="mt-2 text-center leading-tight text-gray-700">
+  <p class="mt-2 text-center leading-tight">
     Fange mit Juliano an, indem Du ein neues Wort zu Deiner Liste hinzufügst:
   </p>
   {% else %}
-  <p class="leading-tight text-gray-700">
+  <p class="leading-tight">
     Füge ein weiteres Wort zu Deiner Liste hinzu:
   </p>
   {% endif %}
@@ -52,37 +57,37 @@
 
 {% if items %}
 <div class="mt-8">
-  <h1 class="leading-tight text-gray-700">
+  <p class="leading-tight">
     Hier ist eine Liste der Wörter, die Du bereits eingegeben hast:
-  </h1>
-  <ul class="flex flex-wrap justify-between -m-2 mt-2">
+  </p>
+  <ul class="-m-2 mt-2 flex flex-wrap justify-between">
     {% for item in items %}
-    <li class="flex flex-col flex-grow m-2 py-2 px-4 bg-gray-200 rounded-lg">
-      <div class="">
-        <div class="pb-1 border-b border-gray-300 text-center text-lg text-indigo-700 ">{{ item.word }}</div>
-      </div>
+    <li class=" m-2 py-2 px-4 flex flex-col flex-grow bg-gray-100 rounded-lg">
+      <p class="pb-1 border-b border-gray-300 text-center text-lg text-indigo-700">
+        {{ item.word }}
+      </p>
       <div class="flex flex-col items-center -mx-1 mt-1 text-sm text-gray-600">
         <div class="flex">
-          <div class="mx-1">
+          <p class="mx-1">
             <span class="italic">N</span>
             <span class="font-semibold">{{ item.repitition_number }}</span>
-          </div>
-          <div class="mx-1">
+          </p>
+          <p class="mx-1">
             <span class="italic">E</span>
             <span class="font-semibold">{{ "{:.3}".format(item.easiness_factor) }}</span>
-          </div>
+          </p>
         </div>
         {% if item.last_learned %}
-        <div class="mx-1">
+        <p class="mx-1">
           <span class="italic">L</span>
           <span class="font-semibold" moment-format="fromNow">{{ item.last_learned }}</span>
-        </div>
+        </p>
         {% endif %}
         {% if item.next_iteration %}
-        <div class="mx-1">
+        <p class="mx-1">
           <span class="italic">W</span>
           <span class="font-semibold" moment-format="fromNow">{{ item.next_iteration }}</span>
-        </div>
+        </p>
         {% endif %}
       </div>
     </li>
