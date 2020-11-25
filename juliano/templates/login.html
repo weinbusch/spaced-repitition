@@ -1,21 +1,39 @@
-{% extends "layout.html" %}
-{% from "_forms.html" import render_form %}
+{% extends "auth.html" %}
+{% from "_forms.html" import render_form_fields %}
 
 {% block main %}
-<div class="flex justify-center">
-  <div class="max-w-lg mt-4 px-2">
-    <h1 class="text-indigo-800 text-4xl text-center leading-tight">Willkommen zu Juliano!</h1>
-    <div class="mt-8 text-sm font-semibold text-gray-600 leading-tight">
-      Bitte gib Deine Zugangsdaten ein, um Dich anzumelden:
-    </div>
-    {{ render_form(form, submit_text="Anmelden") }}
-    <div class="mt-4 text-gray-600 text-center">- oder -</div>
-    <div class="mt-4 flex justify-center">
-      <a class="inline-block px-4 p-2 bg-green-500 hover:bg-green-600 text-white rounded-full cursor-pointer"
-         href="{{ url_for('register') }}">
-        Registriere Dich als neuer Nutzer
+
+<form action="" method="POST">
+  <div class="flex flex-col">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <h1 class="text-indigo-700 text-4xl text-center leading-tight">
+      Willkommen bei Juliano!
+    </h1>
+    <p class="mt-8 leading-tight">
+      {% block instructions %}Bitte gib Deine Zugangsdaten ein, um Dich anzumelden:{% endblock %}
+    </p>
+    {{ render_form_fields(form) }}
+    {% for message in get_flashed_messages(category_filter=["login_error"]) %}
+    <p class="mt-4 text-red-700 leading-tight">
+      {{ message }}
+    </p>
+    {% endfor %}
+    <div class="mt-8 flex flex-col sm:flex-row justify-center items-center">
+      <button type="submit"
+              class="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-full cursor-pointer
+                     leading-tight">
+        {% block submit_action %}Anmelden{% endblock %}
+      </button>
+      <span class="m-2 whitespace-nowrap italic">
+        - oder -
+      </span>
+      <a class="px-4 p-2 bg-green-500 hover:bg-green-600 text-white rounded-full cursor-pointer
+                text-center leading-tight"
+         href="{% block alternative_url %}{{ url_for('register') }}{% endblock %}">
+        {% block alternative_action %}Neues Konto anlegen{% endblock %}
       </a>
     </div>
   </div>
-</div>
+</form>
+
 {% endblock %}

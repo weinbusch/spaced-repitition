@@ -1,5 +1,5 @@
 
-{% macro render_field(field, show_labels=show_labels) %}
+{% macro render_field(field, show_labels=True) %}
 <div class="mt-4">
   {% if show_labels %}
   <div class="text-sm font-semibold mb-1 text-gray-600">{{ field.label }}</div>
@@ -20,7 +20,7 @@
 {% endmacro %}
 
 
-{% macro render_form_fields(form, show_labels=show_labels) %}
+{% macro render_form_fields(form, show_labels=True) %}
 <div>
   {% for field in form %}
   {{ render_field(field, show_labels=show_labels) }}
