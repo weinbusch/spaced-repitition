@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, flash
 
 from flask_login import login_required, login_user, logout_user, current_user
 
@@ -37,16 +37,19 @@ def train():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        form = LoginForm(request.form)
-        if form.validate():
-            credentials = form.data
-            user = get_authenticated_user(db_session, **credentials)
-            if user:
-                login_user(user)
-                return redirect("/")
-    else:
-        form = LoginForm()
+    form = LoginForm(request.form)
+    if request.method == "POST" and form.validate():
+        user = get_authenticated_user(db_session, **form.data)
+        if user:
+            login_user(user)
+            return redirect("/")
+        flash(
+            (
+                "Dein Benutzername und Passwort passen nicht zusammen. "
+                "Bitte versuche es erneut oder lege eine neues Konto an."
+            ),
+            "login_error",
+        )
     return render_template("login.html", form=form)
 
 
