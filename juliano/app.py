@@ -3,7 +3,6 @@ from werkzeug.local import LocalProxy
 from flask.logging import default_handler
 from flask_wtf.csrf import CSRFProtect
 
-
 from .db import connect, disconnect, db_logger
 
 
@@ -11,9 +10,13 @@ db_logger.addHandler(default_handler)
 
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = open("secret").read()
-app.config["WTF_CSRF_TIME_LIMIT"] = None
-app.config["DB_PATH"] = "sqlite:///juliano.db"
+
+app.config.from_object("juliano.config")
+
+try:
+    app.config.from_envvar("JULIANO_SETTINGS")
+except RuntimeError:
+    pass
 
 
 def get_db():

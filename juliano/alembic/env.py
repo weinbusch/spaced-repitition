@@ -5,9 +5,14 @@ from sqlalchemy import pool
 
 from alembic import context
 
+from juliano.app import app
+from juliano.models import Base
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+config.set_main_option("sqlalchemy.url", app.config["DB_PATH"])
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -17,8 +22,6 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from juliano.models import Base
-
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
