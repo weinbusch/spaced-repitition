@@ -49,6 +49,7 @@ def flask_app(database):
     app.config["TESTING"] = True
     app.config["SERVER_NAME"] = "test.localdomain"
     app.config["WTF_CSRF_ENABLED"] = False
+    app.config["DB_PATH"] = "sqlite:///:memory:"
     with app.app_context():
         yield app
 
