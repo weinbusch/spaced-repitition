@@ -1,10 +1,8 @@
 module.exports = {
-    purge: {
-        enabled: true,
-        content: [
-            './juliano/**/*.html',
-        ]
-    },
+    purge: [
+        './juliano/**/*.html',
+        './juliano/**/*.js'
+    ],
     darkMode: false, // or 'media' or 'class'
     theme: {
         extend: {},
