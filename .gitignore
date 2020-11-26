@@ -17,4 +17,3 @@ data/
 .pytest_cache
 *.egg-info
 secret
-build/
