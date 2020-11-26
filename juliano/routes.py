@@ -46,7 +46,7 @@ def login():
         flash(
             (
                 "Dein Benutzername und Passwort passen nicht zusammen. "
-                "Bitte versuche es erneut oder lege eine neues Konto an."
+                "Bitte versuche es erneut oder lege ein neues Konto an."
             ),
             "login_error",
         )
