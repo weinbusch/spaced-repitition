@@ -29,7 +29,9 @@ def test_event_has_created_datetime(session):
     event = Event(grade=3)
     session.add(event)
     session.commit()
-    assert event.created == datetime.datetime.utcnow()
+    assert abs(event.created - datetime.datetime.utcnow()) <= datetime.timedelta(
+        seconds=1
+    )
 
 
 def test_events_can_be_added_to_items(session):

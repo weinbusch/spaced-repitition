@@ -1,3 +1,4 @@
+import pytest
 import datetime
 
 from juliano.models import Item, Event, User
@@ -90,4 +91,4 @@ def test_update_item_sets_next_iteration_datetime(session):
 
     item = update_item(session, item, grade=1)
 
-    assert item.next_iteration == now + datetime.timedelta(days=1)
+    assert item.next_iteration > now
