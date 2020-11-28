@@ -1,7 +1,7 @@
 import datetime
 
 from sqlalchemy import or_
-from .models import Item
+from .models import Item, Event
 
 
 def get_items_for_user(db_session, user, todo=False):
@@ -20,31 +20,31 @@ def get_items_for_user(db_session, user, todo=False):
     return query
 
 
-def update_item(item, grade):
+def update_item(db_session, item, grade):
     """Spaced repition algorithm
 
     https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm
     """
-    if item.repitition_number == 0:
+
+    now = datetime.datetime.utcnow()
+    event = Event(grade=grade, created=now)
+
+    item.events.append(event)
+
+    if item.repitition_number < 3:
         item.inter_repitition_interval = datetime.timedelta(days=1)
-    elif item.repitition_number == 1:
-        item.inter_repitition_interval = datetime.timedelta(
-            days=1
-        )  # deviating from SM-2
     else:
         item.inter_repitition_interval = (
             item.inter_repitition_interval * item.easiness_factor
         )
+
     item.easiness_factor = item.easiness_factor + (
         0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02)
     )
+
     if item.easiness_factor < 1.3:
         item.easiness_factor = 1.3
 
-    item.repitition_number += 1
-
-    item.last_learned = datetime.datetime.utcnow()
-
-    item.next_iteration = item.last_learned + item.inter_repitition_interval
+    item.next_iteration = event.created + item.inter_repitition_interval
 
     return item

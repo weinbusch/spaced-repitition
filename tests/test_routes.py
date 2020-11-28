@@ -37,7 +37,7 @@ def test_train_view_shows_next_item(flask_client, session):
 
 
 def test_train_view_post_grade_increments_repitition_number(flask_client, session):
-    item = Item(user_id=1, word="foo", repitition_number=0)
+    item = Item(user_id=1, word="foo")
     session.add(item)
     session.commit()
     response = flask_client.post(url_for("train"), data={"grade": "5"})

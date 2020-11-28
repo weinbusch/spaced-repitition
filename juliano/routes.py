@@ -29,7 +29,7 @@ def train():
     form = TrainForm(request.form)
     items = get_items_for_user(db_session, user=current_user, todo=True).all()
     if items and request.method == "POST" and form.validate():
-        update_item(items[0], **form.data)
+        update_item(db_session, items[0], **form.data)
         db_session.commit()
         return redirect(url_for("train"))
     return render_template("train.html", items=items, form=form)

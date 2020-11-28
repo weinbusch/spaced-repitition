@@ -1,6 +1,6 @@
 import datetime
 
-from juliano.models import Item, User
+from juliano.models import Item, Event, User
 from juliano.spaced_repitition import get_items_for_user, update_item
 
 
@@ -67,5 +67,27 @@ def test_update_item_sets_last_learned_timestamp(session):
     item = Item(id=1)
     session.add(item)
     session.commit()
-    item = update_item(item, grade=1)
+    item = update_item(session, item, grade=1)
     assert item.last_learned == datetime.datetime.utcnow()
+
+
+def test_update_item_adds_event(session):
+    item = Item(id=1)
+    session.add(item)
+    session.commit()
+
+    item = update_item(session, item, grade=1)
+    assert item.events[0].grade == 1
+
+
+def test_update_item_sets_next_iteration_datetime(session):
+    now = datetime.datetime.utcnow()
+
+    item = Item(id=1)
+    item.events.append(Event(grade=1, created=now - datetime.timedelta(days=1)))
+    session.add(item)
+    session.commit()
+
+    item = update_item(session, item, grade=1)
+
+    assert item.next_iteration == now + datetime.timedelta(days=1)
