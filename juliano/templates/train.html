@@ -26,9 +26,22 @@
           Bewerte Deine Leistung:
         </p>
         <div class="mt-4 -mx-1 flex flex-wrap justify-center">
+          {% set colors = [
+          "border-red-700 bg-red-700",
+          "border-red-500 bg-red-500",
+          "border-yellow-500 bg-yellow-500",
+          "border-yellow-300 bg-yellow-300",
+          "border-green-500 bg-green-500",
+          "border-blue-500 bg-blue-500"
+          ]
+          %}
           {% for radio in form.grade %}
-          <label for={{ radio.id }} class="m-1 flex flex-col items-center border rounded-lg px-6 py-2">
-            {{ radio }}
+          {% set color = colors[loop.index0] %}
+          <label for={{ radio.id }}
+                 class="m-1 flex flex-col items-center border 
+                        {{ color }} text-white text-lg
+                        rounded-lg px-6 py-2">
+            {{ radio(class="") }}
             <span>{{ radio.label.text }}</span>
           </label>
           {% endfor %}
@@ -39,13 +52,13 @@
         {% endfor %}
         </div>
       </div>
-      <div class="mt-8 flex justify-center items-center flex-wrap">
+      <div class="mt-12 flex justify-center items-center flex-col sm:flex-row">
         <button type="submit"
                 class="px-4 p-2 bg-green-500 hover:bg-green-600 text-white rounded-full cursor-pointer">
           <div class="flex flex-col items-center">
-            <p class="leading tight">Speichern</p>
+            <p class="leading-tight text-lg">Speichern</p>
             {% if remaining %}
-            <p class="text-sm font-semibold leading-tight">(noch {{ remaining }})</p>
+            <p class="text-sm leading-tight">(noch {{ remaining }})</p>
             {% endif %}
           </div>
         </button>
@@ -53,7 +66,9 @@
           - oder -
         </span>
         <a href="{{ url_for('index') }}"
-           class="px-4 p-2 bg-red-700 hover:bg-red-800 text-white rounded-full cursor-pointer">
+           class="px-4 p-2 bg-red-700 hover:bg-red-800 text-white 
+                  leading-tight text-lg
+                  rounded-full cursor-pointer">
           Abbrechen
         </a>
       </div>
