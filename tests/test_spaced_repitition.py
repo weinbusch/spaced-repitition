@@ -69,7 +69,10 @@ def test_update_item_sets_last_learned_timestamp(session):
     session.add(item)
     session.commit()
     item = update_item(session, item, grade=1)
-    assert item.last_learned == datetime.datetime.utcnow()
+    assert abs(item.last_learned - datetime.datetime.utcnow()) <= datetime.timedelta(
+        seconds=1
+    )
+    # assert item.last_learned == datetime.datetime.utcnow()
 
 
 def test_update_item_adds_event(session):

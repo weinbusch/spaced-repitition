@@ -31,9 +31,6 @@ def update_item(db_session, item, grade):
 
     item.events.append(event)
 
-    item.repitition_number += 1
-    item.last_learned = event.created
-
     if item.repitition_number < 3:
         item.inter_repitition_interval = datetime.timedelta(days=1)
     else:
