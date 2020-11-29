@@ -19,11 +19,6 @@ def test_items_are_unique_for_word_and_user(session):
         session.commit()
 
 
-def test_event_grade_is_nullable(session):
-    session.add(Event())
-    session.commit()
-
-
 def test_event_has_created_datetime(session):
     event = Event(grade=3)
     session.add(event)
