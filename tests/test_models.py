@@ -33,7 +33,9 @@ def test_events_can_be_added_to_items(session):
     session.add(item)
     event = Event(grade=1, created=datetime.datetime.utcnow())
     item.events.append(event)
-    assert item.events[0].created == datetime.datetime.utcnow()
+    assert abs(
+        item.events[0].created - datetime.datetime.utcnow()
+    ) <= datetime.timedelta(seconds=1)
 
 
 @pytest.mark.skip
