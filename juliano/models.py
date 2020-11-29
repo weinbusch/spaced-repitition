@@ -47,7 +47,7 @@ class Item(Base):
 
     user = relationship("User")
     events = relationship(
-        "Event", order_by="Event.created.desc()", cascade="all, delete"
+        "Event", order_by="Event.created.desc()", cascade="all, delete", lazy="joined"
     )
 
     @property
