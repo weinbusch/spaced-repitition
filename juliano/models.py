@@ -59,5 +59,5 @@ class Event(Base):
 
     id = Column(Integer, primary_key=True)
     item_id = Column(Integer, ForeignKey("items.id"))
-    grade = Column(Integer, nullable=False)
+    grade = Column(Integer)
     created = Column(DateTime, default=datetime.datetime.utcnow)

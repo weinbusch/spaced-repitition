@@ -19,10 +19,9 @@ def test_items_are_unique_for_word_and_user(session):
         session.commit()
 
 
-def test_event_grade_is_not_nullable(session):
+def test_event_grade_is_nullable(session):
     session.add(Event())
-    with pytest.raises(IntegrityError):
-        session.commit()
+    session.commit()
 
 
 def test_event_has_created_datetime(session):
