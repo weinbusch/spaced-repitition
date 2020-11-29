@@ -4,7 +4,7 @@ from flask.logging import default_handler
 from flask_wtf.csrf import CSRFProtect
 
 from .db import connect, disconnect, db_logger
-
+from .animals import get_random_animal
 
 db_logger.addHandler(default_handler)
 
@@ -41,5 +41,11 @@ csrf.init_app(app)
 from .auth import login_manager  # noqa: E402
 
 login_manager.init_app(app)
+
+
+@app.context_processor
+def animals_processor():
+    return dict(get_random_animal=get_random_animal)
+
 
 import juliano.routes  # noqa: E402, F401
