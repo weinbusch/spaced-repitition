@@ -39,8 +39,10 @@ class Item(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     word = Column(Text)
     created = Column(DateTime, default=datetime.datetime.utcnow)
+    repitition_number = Column(Integer, default=0)
     easiness_factor = Column(Float, default=2.5)
     inter_repitition_interval = Column(Interval, default=datetime.timedelta(days=1))
+    last_learned = Column(DateTime)
     next_iteration = Column(DateTime)
 
     __table_args__ = (UniqueConstraint("user_id", "word"),)
@@ -49,17 +51,6 @@ class Item(Base):
     events = relationship(
         "Event", order_by="Event.created.desc()", cascade="all, delete"
     )
-
-    @property
-    def last_learned(self):
-        try:
-            return self.events[0].created
-        except IndexError:
-            return None
-
-    @property
-    def repitition_number(self):
-        return len(self.events)
 
 
 class Event(Base):
