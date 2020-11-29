@@ -702,6 +702,11 @@ video {
   height: 100vh;
 }
 
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
 .text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -920,6 +925,10 @@ video {
 
 .whitespace-nowrap {
   white-space: nowrap;
+}
+
+.w-48 {
+  width: 12rem;
 }
 
 .w-full {
