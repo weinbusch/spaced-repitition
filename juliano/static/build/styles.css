@@ -698,6 +698,10 @@ video {
   font-weight: 600;
 }
 
+.h-48 {
+  height: 12rem;
+}
+
 .h-screen {
   height: 100vh;
 }
