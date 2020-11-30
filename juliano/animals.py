@@ -56,5 +56,7 @@ filenames = [
 ]
 
 
-def get_random_animal(format=".svg"):
-    return random.choice(filenames) + format
+def get_random_animal(ext=".svg"):
+    filename = random.choice(filenames)
+    path = "vendor/1864496-animals/svg/" + filename + ext
+    return path

@@ -3,113 +3,98 @@
 
 {% block main %}
 {% if items %}
-{% set item = items[0] %}
-{% set total = items | length %}
-{% set remaining = total - 1 %}
-<div class="mt-8">
-  <p class="text-center text-sm leading-tight">
+<form action="" method="POST">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% set item = items[0] %}
+  {% set total = items | length %}
+  {% set remaining = total - 1 %}
+  <h1 class="mt-8 text-center">
     Trainiere dieses Wort:
-  </p>
-  <p class="mt-4 text-center text-2xl leading-tight">
+  </h1>
+  <p class="mt-4 text-center text-2xl">
     <span class="inline-block px-4 py-2 bg-indigo-900 rounded-full text-white">
       {{ item.word }}
     </span>
   </p>
   {% if item.last_learned %}
-  <p class="mt-4 text-center text-sm leading-tight text-gray-600">
+  <p class="mt-4 text-center text-sm text-gray-600">
     <span moment-format="fromNow">{{ item.last_learned }}</span> zuletzt geübt.
   </p>
   {% endif %}
-  <div class="mt-8">
-    <form action="" method="POST">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <div>
-        <p class="text-center text-sm leading-tight font-semibold">
-          Bewerte Deine Leistung:
-        </p>
-        <div class="mt-4 -mx-1 flex flex-wrap justify-center">
-          {% set colors = [
-          "border-red-700 bg-red-700",
-          "border-red-500 bg-red-500",
-          "border-yellow-500 bg-yellow-500",
-          "border-yellow-300 bg-yellow-300",
-          "border-green-500 bg-green-500",
-          "border-blue-500 bg-blue-500"
-          ]
-          %}
-          {% for radio in form.grade %}
-          {% set color = colors[loop.index0] %}
-          <label for={{ radio.id }}
-                 class="m-1 flex flex-col items-center border 
-                        {{ color }} text-white text-lg
-                        rounded-lg px-6 py-2">
-            {{ radio(class="") }}
-            <span>{{ radio.label.text }}</span>
-          </label>
-          {% endfor %}
-        </div>
-        <div class="flex flex-col items-center">
-          {% for error in form.grade.errors %}
-          <p class="text-sm mt-1 leading-tight text-red-700 font-semibold">{{ error }}</p>
-          {% endfor %}
-        </div>
-      </div>
-      <div class="mt-12 flex justify-center items-center flex-col sm:flex-row">
-        <button type="submit"
-                class="px-4 p-2 bg-green-500 hover:bg-green-600 text-white
-                       rounded-full cursor-pointer">
-          <div class="flex flex-col items-center">
-            <p class="leading-tight text-lg">Speichern</p>
-            {% if remaining %}
-            <p class="text-sm leading-tight">(noch {{ remaining }})</p>
-            {% endif %}
-          </div>
-        </button>
-        <span class="p-4 italic">
-          - oder -
-        </span>
-        <a href="{{ url_for('index') }}"
-           class="px-4 p-2 bg-red-700 hover:bg-red-800 text-white 
-                  leading-tight text-lg
-                  rounded-full cursor-pointer">
-          Abbrechen
-        </a>
-      </div>
-    </form>
+  <h2 class="mt-8 text-center">
+    Bewerte Deine Leistung:
+  </h2>
+  <div class="mt-4 -mx-1 flex flex-wrap justify-center">
+    {% set colors = [
+    "border-red-700 bg-red-700",
+    "border-red-500 bg-red-500",
+    "border-yellow-500 bg-yellow-500",
+    "border-yellow-300 bg-yellow-300",
+    "border-green-500 bg-green-500",
+    "border-blue-500 bg-blue-500"
+    ]
+    %}
+    {% for radio in form.grade %}
+    <label for={{ radio.id }}
+           class="m-1 flex flex-col items-center border 
+                  {{ colors[loop.index0] }} text-white text-lg
+                  rounded-lg px-6 py-2">
+      {{ radio }}
+      <span>{{ radio.label.text }}</span>
+    </label>
+    {% endfor %}
   </div>
-</div>
-{% else %}
-<div class="mt-8">
-  <h1 class="text-center text-indigo-700 text-4xl">Geschafft!</h1>
-  <div class="mt-4 flex justify-center">
-    <img
-      class="w-48"
-      src="{{ 
-           url_for(
-           'static', 
-           filename=('vendor/1864496-animals/svg/' +  get_random_animal())
-           )
-           }}">
-  </div>
-  <p class="mt-4">
-    Für heute hast Du alle Deine Übungen erledigt und kannst stolz auf
-    Dich sein. Nimm Dir einen Keks und ruhe Dich aus. Morgen geht es
-    weiter.
-  </p>
-  <p class="mt-8 text-center">
+  {% for error in form.grade.errors %}
+  <p class="mt-1 text-center text-sm text-red-700 font-semibold">{{ error }}</p>
+  {% endfor %}
+  <div class="mt-8 flex justify-center items-center flex-col sm:flex-row">
+    <button type="submit"
+            class="px-4 p-2 bg-green-500 hover:bg-green-600 text-white
+                   rounded-full cursor-pointer">
+      <div class="flex flex-col items-center">
+        <span class="text-lg">Speichern</span>
+        {% if remaining %}
+        <span class="text-sm leading-tight whitespace-nowrap">(noch {{ remaining }})</span>
+        {% endif %}
+      </div>
+    </button>
+    <span class="p-4 italic">
+      - oder -
+    </span>
     <a href="{{ url_for('index') }}"
-       class="inline-block px-4 p-2 bg-indigo-700 hover:bg-indigo-800
-              text-white rounded-full cursor-pointer">
-      Zur Startseite
+       class="px-4 p-2 bg-red-700 hover:bg-red-800 text-white 
+              text-lg rounded-full cursor-pointer">
+      Abbrechen
     </a>
-  </p>
+  </div>
+</form>
+{% else %}
+<h1 class="mt-4 text-center text-indigo-700 text-4xl">
+  Geschafft!
+</h1>
+<div class="mt-4 flex justify-center">
+  <div class="w-48">
+    <img src="{{ url_for('static', filename=get_random_animal()) }}">
+  </div>
 </div>
-<div class="mt-8 text-center text-xs text-gray-600">
+<p class="mt-4">
+  Für heute hast Du alle Deine Übungen erledigt und kannst stolz auf
+  Dich sein. Nimm Dir einen Keks und ruhe Dich aus. Morgen geht es
+  weiter.
+</p>
+<p class="mt-8 text-center">
+  <a href="{{ url_for('index') }}"
+     class="inline-block px-4 p-2 bg-indigo-700 hover:bg-indigo-800
+            text-white rounded-full cursor-pointer">
+    Zur Startseite
+  </a>
+</p>
+<p class="mt-8 text-center text-xs text-gray-600">
   Icons made by
   <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>
   from
   <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com
   </a>
-</div>
+</p>
 {% endif %}
 {% endblock %}
