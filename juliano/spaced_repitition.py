@@ -1,3 +1,4 @@
+import itertools
 import collections
 import datetime
 
@@ -64,7 +65,23 @@ def get_word_calendar(items):
     dates = sorted([item.created.date() for item in items])
     counts = collections.Counter(dates)
 
-    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+    today = datetime.date.today()
     first_monday = dates[0] - datetime.timedelta(days=dates[0].weekday())
+    next_monday = today + datetime.timedelta(days=7 - today.weekday())
 
-    return [(date, counts[date]) for date in date_range(first_monday, tomorrow)]
+    return [(date, counts[date]) for date in date_range(first_monday, next_monday)]
+
+
+def grouper(iterable, n, fillvalue=None):
+    """Collect data into fixed-length chunks or blocks
+
+    From the itertools documentation
+    https://docs.python.org/3/library/itertools.html#itertools-recipes
+    """
+    args = [iter(iterable)] * n
+    return itertools.zip_longest(*args, fillvalue=fillvalue)
+
+
+def get_weekly_word_calendar(items):
+    cal = get_word_calendar(items)
+    return list(grouper(cal, 7))
