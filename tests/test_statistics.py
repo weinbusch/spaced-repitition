@@ -20,3 +20,8 @@ def test_word_calendar_starts_on_a_monday():
     items = [Item(created=tuesday)]
     cal = get_word_calendar(items)
     assert cal[0] == (monday, 0)
+
+
+def test_word_calendar_with_empty_list_of_items():
+    cal = get_word_calendar([])
+    assert cal == []

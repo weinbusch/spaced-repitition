@@ -57,6 +57,10 @@ def date_range(start, end):
 
 
 def get_word_calendar(items):
+
+    if not items:
+        return []
+
     dates = sorted([item.created.date() for item in items])
     counts = collections.Counter(dates)
 
