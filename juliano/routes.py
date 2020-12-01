@@ -6,7 +6,7 @@ from .app import app, db_session
 from .models import Item
 from .forms import ItemForm, TrainForm
 from .auth import get_authenticated_user, LoginForm, create_user, RegisterForm
-from .spaced_repitition import update_item, get_items_for_user
+from .spaced_repitition import update_item, get_items_for_user, get_weekly_word_calendar
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -14,13 +14,16 @@ from .spaced_repitition import update_item, get_items_for_user
 def index():
     form = ItemForm(request.form)
     items = get_items_for_user(db_session, user=current_user).all()
+    calendar = get_weekly_word_calendar(items)
     todo_items = get_items_for_user(db_session, user=current_user, todo=True).all()
     if request.method == "POST" and form.validate():
         item = Item(word=form.word.data, user=current_user)
         db_session.add(item)
         db_session.commit()
         return redirect(url_for("index"))
-    return render_template("index.html", items=items, form=form, todo_items=todo_items)
+    return render_template(
+        "index.html", items=items, form=form, todo_items=todo_items, calendar=calendar
+    )
 
 
 @app.route("/train", methods=["GET", "POST"])

@@ -1,0 +1,16 @@
+<div class="flex flex-row">
+  {% for week in calendar %}
+  <div class="ml-2 flex flex-col">
+    {% for date, count in week %}
+    {% if count %}
+    {% set color = "bg-green-500 border-green-700" %}
+    {% else %}
+    {% set color = "" %}
+    {% endif %}
+    <div class="mt-2 w-4 h-4 border {{ color }} relative group"
+	 title="{{ date }} ({{ count }})">
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
