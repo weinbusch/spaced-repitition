@@ -1,3 +1,4 @@
+import collections
 import datetime
 
 from sqlalchemy import or_
@@ -48,3 +49,11 @@ def update_item(db_session, item, grade):
     item.next_iteration = event.created + item.inter_repitition_interval
 
     return item
+
+
+def get_histogram(items):
+    today = datetime.datetime.utcnow().date()
+    counts = collections.Counter([item.created.date() for item in items])
+    dates = [today - datetime.timedelta(days=x) for x in range(14)]
+    hist = [(date, counts[date]) for date in dates]
+    return hist
