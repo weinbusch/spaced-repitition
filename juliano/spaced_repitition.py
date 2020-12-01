@@ -51,7 +51,16 @@ def update_item(db_session, item, grade):
     return item
 
 
-def get_histogram(items):
-    counts = collections.Counter([item.created.date() for item in items]).most_common()
-    maximum = counts[0][1]
-    return [(date, n, n / maximum) for date, n in counts]
+def date_range(start, end):
+    days = (end - start).days
+    return [start + datetime.timedelta(days=x) for x in range(days)]
+
+
+def get_word_calendar(items):
+    dates = sorted([item.created.date() for item in items])
+    counts = collections.Counter(dates)
+
+    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+    first_monday = dates[0] - datetime.timedelta(days=dates[0].weekday())
+
+    return [(date, counts[date]) for date in date_range(first_monday, tomorrow)]
