@@ -52,8 +52,6 @@ def update_item(db_session, item, grade):
 
 
 def get_histogram(items):
-    today = datetime.datetime.utcnow().date()
-    counts = collections.Counter([item.created.date() for item in items])
-    dates = [today - datetime.timedelta(days=x) for x in range(14)]
-    hist = [(date, counts[date]) for date in dates]
-    return hist
+    counts = collections.Counter([item.created.date() for item in items]).most_common()
+    maximum = counts[0][1]
+    return [(date, n, n / maximum) for date, n in counts]
