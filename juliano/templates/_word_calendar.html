@@ -1,0 +1,48 @@
+{% set cal, maximum = calendar %}
+{% set colors = [
+"",
+"bg-green-100 border-green-500",
+"bg-green-200 border-green-500",
+"bg-green-300 border-green-500",
+"bg-green-400 border-green-500",
+"bg-green-500 border-green-500",
+]
+%}
+{% set months = [
+"Jan", "Feb", "Mrz", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"
+]
+%}
+<div class="flex flex-col">
+  <p>Anzahl der bisher gelernten Wörter pro Tag in den letzten zwölf Wochen:</p>
+  <div class="overflow-x-auto mt-2 flex flex-row pt-4">
+    <div class="flex-col">
+      {% for day in ["Mo", "", "Mi", "", "Fr", "", "So"] %}
+      <div class="mt-2 h-4 text-sm leading-none text-gray-600">{{ day }}</div>
+      {% endfor %}
+    </div>
+    {% for week in cal %}
+    <div class="ml-2 flex flex-col relative">
+      {% for date, count in week %}
+      {% set rank = 5 * count // maximum %}
+      <div class="mt-2 w-4 h-4 border 
+                  {% if date.day == 1 %}border-gray-400{% endif %}
+                  {{ colors[rank] }}"
+	   title="{{ date }} ({{ count }})">
+      </div>
+      {% if date.day == 1 %}
+      <span class="absolute bottom-full text-sm leading-none text-gray-600">
+        {{ months[date.month-1] }}
+      </span>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  <div class="mt-4 flex flex-row items-center justify-end">
+    <span class="mr-1 text-sm leading-none text-gray-600">{{ 0 }}</span>
+    {% for color in colors %}
+    <span class="ml-1 w-4 h-4 border {{ color }}"></span>
+    {% endfor %}
+    <span class="ml-2 text-sm leading-none text-gray-600">{{ maximum }}</span>
+  </div>
+</div>
