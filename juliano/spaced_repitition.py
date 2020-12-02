@@ -63,7 +63,7 @@ def update_item(db_session, item, grade):
 
 def date_range(start, end):
     days = (end - start).days
-    return [start + datetime.timedelta(days=x) for x in range(days)]
+    return (start + datetime.timedelta(days=x) for x in range(days))
 
 
 def get_word_calendar(items):
@@ -71,18 +71,20 @@ def get_word_calendar(items):
     if not items:
         return [], None
 
-    dates = sorted([item.created.date() for item in items])
+    today = datetime.date.today()
+    next_monday = today + datetime.timedelta(days=7 - today.weekday())
+    first_monday = next_monday - datetime.timedelta(days=12 * 7)
+
+    dates = (
+        item.created.date() for item in items if item.created.date() >= first_monday
+    )
     counts = collections.Counter(dates)
     maximum = max(counts.values())
 
-    today = datetime.date.today()
-    start = today - datetime.timedelta(days=7 * 11)
-    first_monday = start - datetime.timedelta(days=start.weekday())
-    next_monday = today + datetime.timedelta(days=7 - today.weekday())
-
-    return [
-        (date, counts[date]) for date in date_range(first_monday, next_monday)
-    ], maximum
+    return (
+        [(date, counts[date]) for date in date_range(first_monday, next_monday)],
+        maximum,
+    )
 
 
 def grouper(iterable, n, fillvalue=None):
@@ -97,4 +99,4 @@ def grouper(iterable, n, fillvalue=None):
 
 def get_weekly_word_calendar(items):
     cal, maximum = get_word_calendar(items)
-    return list(grouper(cal, 7)), maximum
+    return (list(grouper(cal, 7)), maximum)
