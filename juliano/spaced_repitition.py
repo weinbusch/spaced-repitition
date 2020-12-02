@@ -60,16 +60,19 @@ def date_range(start, end):
 def get_word_calendar(items):
 
     if not items:
-        return []
+        return [], None
 
     dates = sorted([item.created.date() for item in items])
     counts = collections.Counter(dates)
+    maximum = max(counts.values())
 
     today = datetime.date.today()
     first_monday = dates[0] - datetime.timedelta(days=dates[0].weekday())
     next_monday = today + datetime.timedelta(days=7 - today.weekday())
 
-    return [(date, counts[date]) for date in date_range(first_monday, next_monday)]
+    return [
+        (date, counts[date]) for date in date_range(first_monday, next_monday)
+    ], maximum
 
 
 def grouper(iterable, n, fillvalue=None):
@@ -83,5 +86,5 @@ def grouper(iterable, n, fillvalue=None):
 
 
 def get_weekly_word_calendar(items):
-    cal = get_word_calendar(items)
-    return list(grouper(cal, 7))
+    cal, maximum = get_word_calendar(items)
+    return list(grouper(cal, 7)), maximum
