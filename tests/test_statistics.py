@@ -16,7 +16,7 @@ def test_word_calendar_is_a_list_of_dates_and_counts():
     monday = now - datetime.timedelta(now.weekday())
     items = [Item(created=monday) for _ in range(3)]
     cal, _ = get_word_calendar(items)
-    assert cal[0] == (monday.date(), 3)
+    assert cal[-7] == (monday.date(), 3)
 
 
 def test_word_calendar_starts_on_a_monday():
@@ -25,7 +25,7 @@ def test_word_calendar_starts_on_a_monday():
     monday = tuesday.date() - datetime.timedelta(days=1)
     items = [Item(created=tuesday)]
     cal, _ = get_word_calendar(items)
-    assert cal[0] == (monday, 0)
+    assert cal[-7] == (monday, 0)
 
 
 def test_word_calendar_ends_on_a_sunday():
@@ -35,6 +35,13 @@ def test_word_calendar_ends_on_a_sunday():
     items = [Item(created=monday)]
     cal, _ = get_word_calendar(items)
     assert cal[-1] == (sunday, 0)
+
+
+def test_word_calendar_covers_12_weeks():
+    now = datetime.datetime.utcnow()
+    items = [Item(created=now)]
+    cal, _ = get_word_calendar(items)
+    assert len(cal) == 7 * 12
 
 
 def test_word_calendar_with_empty_list_of_items():
@@ -50,5 +57,5 @@ def test_word_calendar_weeks_returns_list_of_weeks():
         Item(created=now - datetime.timedelta(days=7)),
     ]
     cal, maximum = get_weekly_word_calendar(items)
-    assert len(cal) == 2
+    assert len(cal) == 12
     assert len(cal[0]) == 7

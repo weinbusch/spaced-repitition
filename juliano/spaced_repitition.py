@@ -67,7 +67,8 @@ def get_word_calendar(items):
     maximum = max(counts.values())
 
     today = datetime.date.today()
-    first_monday = dates[0] - datetime.timedelta(days=dates[0].weekday())
+    start = today - datetime.timedelta(days=7 * 11)
+    first_monday = start - datetime.timedelta(days=start.weekday())
     next_monday = today + datetime.timedelta(days=7 - today.weekday())
 
     return [
