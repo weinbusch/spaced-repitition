@@ -1,3 +1,5 @@
+import itertools
+import collections
 import datetime
 
 from sqlalchemy import or_
@@ -38,9 +40,18 @@ def update_item(db_session, item, grade):
             item.inter_repitition_interval * item.easiness_factor
         )
 
-    item.easiness_factor = item.easiness_factor + (
-        0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02)
+    increment = dict(
+        [
+            (0, -0.8),
+            (1, -0.54),
+            (2, -0.32),
+            (3, -0.14),
+            (4, 0),
+            (5, 0.1),
+        ]
     )
+
+    item.easiness_factor += increment[grade]
 
     if item.easiness_factor < 1.3:
         item.easiness_factor = 1.3
@@ -48,3 +59,42 @@ def update_item(db_session, item, grade):
     item.next_iteration = event.created + item.inter_repitition_interval
 
     return item
+
+
+def date_range(start, end):
+    days = (end - start).days
+    return [start + datetime.timedelta(days=x) for x in range(days)]
+
+
+def get_word_calendar(items):
+
+    if not items:
+        return [], None
+
+    dates = sorted([item.created.date() for item in items])
+    counts = collections.Counter(dates)
+    maximum = max(counts.values())
+
+    today = datetime.date.today()
+    start = today - datetime.timedelta(days=7 * 11)
+    first_monday = start - datetime.timedelta(days=start.weekday())
+    next_monday = today + datetime.timedelta(days=7 - today.weekday())
+
+    return [
+        (date, counts[date]) for date in date_range(first_monday, next_monday)
+    ], maximum
+
+
+def grouper(iterable, n, fillvalue=None):
+    """Collect data into fixed-length chunks or blocks
+
+    From the itertools documentation
+    https://docs.python.org/3/library/itertools.html#itertools-recipes
+    """
+    args = [iter(iterable)] * n
+    return itertools.zip_longest(*args, fillvalue=fillvalue)
+
+
+def get_weekly_word_calendar(items):
+    cal, maximum = get_word_calendar(items)
+    return list(grouper(cal, 7)), maximum
