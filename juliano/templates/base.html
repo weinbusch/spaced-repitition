@@ -15,28 +15,31 @@
   <title>Willkommen bei Juliano</title>
   {% endif %}
 
-  <script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/moment.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/moment-timezone@0.5.27/builds/moment-timezone-with-data.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/locale/de.js"></script>
-
+  <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+  <script src="https://unpkg.com/dayjs@1.8.21/plugin/utc.js"></script>
+  <script src="https://unpkg.com/dayjs@1.8.21/plugin/relativeTime.js"></script>
+  <script src="https://unpkg.com/dayjs@1.8.21/locale/de.js"></script>
+  
 </head>
 
 <body class="h-screen antialiased text-gray-800">
 {% block body %}{% endblock %}
 <script>
+  dayjs.extend(window.dayjs_plugin_utc)
+  dayjs.extend(window.dayjs_plugin_relativeTime)
+  
   var locale = "{{ g.locale or 'de' }}";
-  moment.locale(locale);
+  dayjs.locale(locale)
 
-  var momentObjects = document.querySelectorAll("span[moment-format]");
+  var datetimeNodes = document.querySelectorAll("span[moment-format]");
 
-  for (var i=0, j=momentObjects.length; i<j; i++){
-      var obj = momentObjects[i];
+  for (var i=0, j=datetimeNodes.length; i<j; i++){
+      var obj = datetimeNodes[i];
       var utcDatetime = obj.textContent;
-      if (!utcDatetime.endsWith('Z')) {utcDatetime += 'Z'}
-      var datetime = moment(utcDatetime).tz('Europe/Berlin');
+      var datetime = dayjs.utc(utcDatetime).local()
       var format = obj.getAttribute('moment-format');
       if (format=='fromNow'){
-          obj.textContent = datetime.fromNow();
+           obj.textContent = datetime.fromNow();
       } else {
           obj.textContent = datetime.format(format);
       }

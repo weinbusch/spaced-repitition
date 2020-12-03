@@ -1,11 +1,11 @@
 {% set cal, maximum = calendar %}
 {% set colors = [
 "",
-"bg-green-100 border-green-500",
-"bg-green-200 border-green-500",
-"bg-green-300 border-green-500",
-"bg-green-400 border-green-500",
+"bg-green-100 border-green-100",
+"bg-green-300 border-green-300",
 "bg-green-500 border-green-500",
+"bg-green-700 border-green-700",
+"bg-green-900 border-green-900",
 ]
 %}
 {% set months = [
@@ -13,8 +13,7 @@
 ]
 %}
 <div class="flex flex-col">
-  <p>Anzahl der bisher gelernten Wörter pro Tag in den letzten zwölf Wochen:</p>
-  <div class="overflow-x-auto mt-2 flex flex-row pt-4">
+  <div class="overflow-x-auto flex flex-row pt-4">
     <div class="flex-col">
       {% for day in ["Mo", "", "Mi", "", "Fr", "", "So"] %}
       <div class="mt-2 h-4 text-sm leading-none text-gray-600">{{ day }}</div>
@@ -23,9 +22,9 @@
     {% for week in cal %}
     <div class="ml-2 flex flex-col relative">
       {% for date, count in week %}
-      {% set rank = 5 * count // maximum %}
+      {% set rank = (5 * count / maximum) | round | int %}
       <div class="mt-2 w-4 h-4 border 
-                  {% if date.day == 1 %}border-gray-400{% endif %}
+                  {% if date.day == 1 %}rounded-full{% endif %}
                   {{ colors[rank] }}"
 	   title="{{ date }} ({{ count }})">
       </div>

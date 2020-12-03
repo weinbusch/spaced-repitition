@@ -41,7 +41,10 @@
 
 {{ render_form(form, show_labels=False) }}
 
-<div class="mt-4">
+<div class="mt-8">
+  <p class="mb-2">
+    Hier ist eine Übersicht der in den letzten zwölf Wochen pro Tag hinzugefügten Wörter.
+  </p>
   {% include "_word_calendar.html" %}
 </div>
 
@@ -68,13 +71,13 @@
       {% if item.last_learned %}
       <p class="mx-1">
         <span class="italic">L</span>
-        <span class="font-semibold" moment-format="fromNow">{{ item.last_learned }}</span>
+        <span moment-format="fromNow">{{ item.last_learned.strftime("%Y-%m-%d %H:%M:%S") }}</span>
       </p>
       {% endif %}
       {% if item.next_iteration %}
       <p class="mx-1">
         <span class="italic">W</span>
-        <span class="font-semibold" moment-format="fromNow">{{ item.next_iteration }}</span>
+        <span class="font-semibold" moment-format="fromNow">{{ item.next_iteration.strftime("%Y-%m-%d %H:%M:%S") }}</span>
       </p>
       {% endif %}
     </div>
