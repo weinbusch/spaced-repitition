@@ -7,7 +7,7 @@ from .models import Item
 from .forms import ItemForm, TrainForm
 from .auth import get_authenticated_user, LoginForm, create_user, RegisterForm
 from .spaced_repitition import update_item, get_items_for_user, get_weekly_word_calendar
-from .animals import filenames
+from .images import filenames
 
 
 @app.route("/", methods=["GET", "POST"])

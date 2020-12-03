@@ -192,7 +192,7 @@ W = dict(
 weights = [W[x.split("/", 1)[0]] for x in filenames]
 
 
-def get_random_animal():
+def get_random_image():
     filename = random.choices(filenames, weights=weights, k=1)[0]
     path = "vendor/" + filename
     return path
