@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, abort
 
 from flask_login import login_required, login_user, logout_user, current_user
 
@@ -7,6 +7,7 @@ from .models import Item
 from .forms import ItemForm, TrainForm
 from .auth import get_authenticated_user, LoginForm, create_user, RegisterForm
 from .spaced_repitition import update_item, get_items_for_user, get_weekly_word_calendar
+from .images import filenames
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -73,3 +74,11 @@ def register():
         login_user(user)
         return redirect(url_for("index"))
     return render_template("register.html", form=form)
+
+
+@app.route("/images")
+@login_required
+def all_images():
+    if not app.config["DEBUG"]:
+        abort(404)
+    return render_template("images.html", filenames=filenames)

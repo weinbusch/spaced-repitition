@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block main %}
+<div class="flex flex-wrap -m-2 justify-between">
+  {% for filename in filenames %}
+  <div class="m-2">
+    <div class="w-24">
+      <img title="{{ filename }}" src="{{ url_for('static', filename='vendor/' + filename) }}">
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
