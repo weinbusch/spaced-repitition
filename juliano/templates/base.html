@@ -36,8 +36,7 @@
   for (var i=0, j=datetimeNodes.length; i<j; i++){
       var obj = datetimeNodes[i];
       var utcDatetime = obj.textContent;
-      if (!utcDatetime.endsWith('Z')) {utcDatetime += 'Z'}
-      var datetime = dayjs(utcDatetime)
+      var datetime = dayjs.utc(utcDatetime).local()
       var format = obj.getAttribute('moment-format');
       if (format=='fromNow'){
            obj.textContent = datetime.fromNow();
