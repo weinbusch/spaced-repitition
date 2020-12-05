@@ -22,10 +22,9 @@ def test_word_calendar_is_a_list_of_dates_and_counts():
 def test_word_calendar_starts_on_a_monday():
     now = datetime.datetime.utcnow()
     tuesday = now + datetime.timedelta(days=1 - now.weekday())
-    monday = tuesday.date() - datetime.timedelta(days=1)
     items = [Item(created=tuesday)]
     cal, _ = get_word_calendar(items)
-    assert cal[-7] == (monday, 0)
+    assert cal[0][0].weekday() == 0
 
 
 def test_word_calendar_ends_on_a_sunday():

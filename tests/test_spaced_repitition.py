@@ -1,7 +1,6 @@
-import pytest
 import datetime
 
-from juliano.models import Item, Event, User
+from juliano.models import Item, User
 from juliano.spaced_repitition import get_items_for_user, update_item
 
 
@@ -88,7 +87,6 @@ def test_update_item_sets_next_iteration_datetime(session):
     now = datetime.datetime.utcnow()
 
     item = Item(id=1)
-    item.events.append(Event(grade=1, created=now - datetime.timedelta(days=1)))
     session.add(item)
     session.commit()
 
