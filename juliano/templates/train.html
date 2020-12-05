@@ -18,7 +18,7 @@
   </p>
   {% if item.last_learned %}
   <p class="mt-4 text-center text-sm text-gray-600">
-    <span moment-format="fromNow">{{ item.last_learned }}</span> zuletzt geübt.
+    <span moment-format="fromNow">{{ item.last_learned.strftime("%Y-%m-%d %H:%M:%S") }}</span> zuletzt geübt.
   </p>
   {% endif %}
   <h2 class="mt-8 text-center">
