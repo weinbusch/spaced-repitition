@@ -19,6 +19,13 @@ def test_items_are_unique_for_word_and_user(session):
         session.commit()
 
 
+def test_item_is_active_by_default(session):
+    item = Item()
+    session.add(item)
+    session.commit()
+    assert item.is_active is True
+
+
 def test_event_has_created_datetime(session):
     event = Event(grade=3)
     session.add(event)

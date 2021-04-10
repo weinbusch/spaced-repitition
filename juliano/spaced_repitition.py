@@ -7,7 +7,11 @@ from .models import Item, Event
 
 
 def get_items_for_user(db_session, user, todo=False):
-    query = db_session.query(Item).filter(Item.user == user)
+    query = (
+        db_session.query(Item)
+        .filter(Item.user == user)
+        .filter(Item.is_active.is_(True))
+    )
 
     if todo:
         query = query.filter(

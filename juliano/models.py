@@ -2,6 +2,7 @@ import datetime
 
 from sqlalchemy import (
     Column,
+    Boolean,
     Integer,
     Float,
     Text,
@@ -42,6 +43,7 @@ class Item(Base):
     easiness_factor = Column(Float, default=2.5)
     inter_repitition_interval = Column(Interval, default=datetime.timedelta(days=1))
     next_iteration = Column(DateTime)
+    is_active = Column(Boolean, default=True)
 
     __table_args__ = (UniqueConstraint("user_id", "word"),)
 

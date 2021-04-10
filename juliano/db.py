@@ -12,7 +12,6 @@ db_logger = logging.getLogger("sqlalchemy.engine")
 db_logger.setLevel(logging.INFO)
 
 
-@event.listens_for(Engine, "connect")
 def activate_sqlite_fk_constraints(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
@@ -20,7 +19,9 @@ def activate_sqlite_fk_constraints(dbapi_connection, connection_record):
 
 
 def get_engine(path):
-    return create_engine(path)
+    e = create_engine(path)
+    event.listen(e, "connect", activate_sqlite_fk_constraints)
+    return e
 
 
 def connect(path):

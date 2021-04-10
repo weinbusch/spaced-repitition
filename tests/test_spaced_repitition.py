@@ -63,6 +63,27 @@ def test_get_todo_items(session):
     assert [x.id for x in items] == [1, 2]
 
 
+def test_inactive_items(session):
+    user = User(id=1)
+    session.add_all(
+        [
+            user,
+            Item(id=1, user=user),
+            Item(id=2, user=user, next_iteration=datetime.datetime.utcnow()),
+            Item(
+                id=3,
+                user=user,
+                next_iteration=datetime.datetime.utcnow(),
+                is_active=False,
+            ),
+        ]
+    )
+    items = get_items_for_user(session, user).all()
+    assert len(items) == 2
+    todo_items = get_items_for_user(session, user, todo=True).all()
+    assert len(todo_items) == 2
+
+
 def test_update_item_sets_last_learned_timestamp(session):
     item = Item(id=1)
     session.add(item)
