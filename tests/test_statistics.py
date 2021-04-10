@@ -45,8 +45,18 @@ def test_word_calendar_covers_12_weeks():
 
 def test_word_calendar_with_empty_list_of_items():
     cal, maximum = get_word_calendar([])
-    assert cal == []
-    assert maximum is None
+    assert len(cal) == 7 * 12
+    assert maximum == 0
+
+
+def test_word_calendar_with_outdated_items_only():
+    now = datetime.datetime.utcnow()
+    items = [
+        Item(created=now - datetime.timedelta(days=13 * 7)),
+    ]
+    cal, maximum = get_word_calendar(items)
+    assert len(cal) == 7 * 12
+    assert maximum == 0
 
 
 def test_word_calendar_weeks_returns_list_of_weeks():
