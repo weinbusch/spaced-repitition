@@ -72,6 +72,17 @@ def test_register_user(flask_anonymous_client, session):
     assert session.query(User).first().username == "foo"
 
 
+def test_register_view_opt_out(flask_anonymous_client):
+    flask_anonymous_client.application.config["REGISTER_VIEW"] = False
+    response = flask_anonymous_client.get(url_for("register"))
+    assert response.status_code == 404
+    response = flask_anonymous_client.post(
+        url_for("register"),
+        data={"username": "foo", "password": "bar", "repeat_password": "bar"},
+    )
+    assert response.status_code == 404
+
+
 def test_register_existing_username(flask_anonymous_client, session):
     session.add(User(username="foo"))
     session.commit()

@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash, abort
+from flask import render_template, request, redirect, url_for, flash, abort, current_app
 
 from flask_login import login_required, login_user, logout_user, current_user
 
@@ -66,6 +66,8 @@ def logout():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    if not current_app.config["REGISTER_VIEW"]:
+        return abort(404)
     form = RegisterForm(request.form)
     if request.method == "POST" and form.validate():
         user = create_user(form.username.data, form.password.data)
