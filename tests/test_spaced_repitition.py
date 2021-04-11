@@ -40,6 +40,44 @@ def test_get_items_sorted_by_due_date(session):
     assert [x.id for x in items] == [2, 1]
 
 
+def test_exclude_inactive_items(session):
+    user = User(id=1)
+    session.add_all(
+        [
+            user,
+            Item(id=1, user=user),
+            Item(id=2, user=user, next_iteration=datetime.datetime.utcnow()),
+            Item(
+                id=3,
+                user=user,
+                next_iteration=datetime.datetime.utcnow(),
+                is_active=False,
+            ),
+        ]
+    )
+    items = get_items_for_user(session, user).all()
+    assert len(items) == 2
+
+
+def test_include_inactive_items(session):
+    user = User(id=1)
+    session.add_all(
+        [
+            user,
+            Item(id=1, user=user),
+            Item(id=2, user=user, next_iteration=datetime.datetime.utcnow()),
+            Item(
+                id=3,
+                user=user,
+                next_iteration=datetime.datetime.utcnow(),
+                is_active=False,
+            ),
+        ]
+    )
+    items = get_items_for_user(session, user, include_inactive=True).all()
+    assert len(items) == 3
+
+
 def test_get_todo_items(session):
     user = User(id=1)
     session.add_all(
@@ -63,7 +101,7 @@ def test_get_todo_items(session):
     assert [x.id for x in items] == [1, 2]
 
 
-def test_inactive_items(session):
+def test_exclude_inactive_items_from_todo_list(session):
     user = User(id=1)
     session.add_all(
         [
@@ -78,8 +116,6 @@ def test_inactive_items(session):
             ),
         ]
     )
-    items = get_items_for_user(session, user).all()
-    assert len(items) == 2
     todo_items = get_items_for_user(session, user, todo=True).all()
     assert len(todo_items) == 2
 

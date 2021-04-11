@@ -6,12 +6,11 @@ from sqlalchemy import or_
 from .models import Item, Event
 
 
-def get_items_for_user(db_session, user, todo=False):
-    query = (
-        db_session.query(Item)
-        .filter(Item.user == user)
-        .filter(Item.is_active.is_(True))
-    )
+def get_items_for_user(db_session, user, todo=False, include_inactive=False):
+    query = db_session.query(Item).filter(Item.user == user)
+
+    if not include_inactive:
+        query = query.filter(Item.is_active.is_(True))
 
     if todo:
         query = query.filter(
