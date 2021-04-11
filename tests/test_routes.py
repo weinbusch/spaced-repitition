@@ -28,6 +28,14 @@ def test_create_item_with_very_long_word(flask_client, session):
     assert response.status_code == 200
 
 
+def test_items_list_view(flask_client, session):
+    session.add(Item(user_id=1, word="foobarbaz"))
+    session.commit()
+    response = flask_client.get(url_for("item_list"))
+    assert response.status_code == 200
+    assert b"foobarbaz" in response.data
+
+
 def test_train_view_shows_next_item(flask_client, session):
     session.add(Item(user_id=1, word="foobarbaz"))
     session.commit()

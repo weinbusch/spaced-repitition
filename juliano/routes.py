@@ -27,6 +27,13 @@ def index():
     )
 
 
+@app.route("/list", methods=["GET"])
+@login_required
+def item_list():
+    items = get_items_for_user(db_session, user=current_user).all()
+    return render_template("item_list.html", items=items)
+
+
 @app.route("/train", methods=["GET", "POST"])
 @login_required
 def train():
