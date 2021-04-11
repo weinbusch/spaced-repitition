@@ -63,6 +63,13 @@ class Item(Base):
     def repitition_number(self):
         return len(self.events)
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "word": self.word,
+            "is_active": self.is_active,
+        }
+
 
 class Event(Base):
 

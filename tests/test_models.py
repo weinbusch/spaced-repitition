@@ -26,6 +26,15 @@ def test_item_is_active_by_default(session):
     assert item.is_active is True
 
 
+def test_item_to_dict():
+    item = Item(id=1, word="foo", is_active=True)
+    assert item.to_dict() == {
+        "id": 1,
+        "word": "foo",
+        "is_active": True,
+    }
+
+
 def test_event_has_created_datetime(session):
     event = Event(grade=3)
     session.add(event)
