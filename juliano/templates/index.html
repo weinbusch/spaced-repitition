@@ -24,7 +24,7 @@
     </div>
   </a>
 </h1>
-<p class="mt-8 text-center text-gray-600 italic">
+<p class="mt-6 text-center text-gray-600 italic">
   - oder -
 </p>
 {% else %}
@@ -35,52 +35,22 @@
 </h1>
 {% endif %}
 
-<h2 class="mt-8">
+<h2 class="mt-6">
   Füge ein weiteres Wort zu Deiner Liste hinzu:
 </h2>
 
 {{ render_form(form, show_labels=False) }}
 
+<div class="mt-8 flex flex-row justify-around">
+  <a class="p-2 px-4 hover:underline text-indigo-700 border border-indigo-700 rounded-full"
+     href="{{ url_for('item_list') }}">
+    Wortliste
+  </a>  
+</div>
+
 <div class="mt-8">
   {% include "_word_calendar.html" %}
 </div>
-
-<p class="mt-8">
-  Hier ist eine Liste der Wörter, die Du bereits eingegeben hast:
-</p>
-<ul class="-m-2 mt-2 flex flex-wrap justify-between">
-  {% for item in items %}
-  <li class=" m-2 py-2 px-4 flex flex-col flex-grow bg-gray-100 rounded-lg">
-    <p class="pb-1 border-b border-gray-300 text-center text-lg text-indigo-700">
-      {{ item.word }}
-    </p>
-    <div class="flex flex-col items-center -mx-1 mt-1 text-sm text-gray-600">
-      <div class="flex">
-        <p class="mx-1">
-          <span class="italic">N</span>
-          <span class="font-semibold">{{ item.repitition_number }}</span>
-        </p>
-        <p class="mx-1">
-          <span class="italic">E</span>
-          <span class="font-semibold">{{ "{:.3}".format(item.easiness_factor) }}</span>
-        </p>
-      </div>
-      {% if item.last_learned %}
-      <p class="mx-1">
-        <span class="italic">L</span>
-        <span moment-format="fromNow">{{ item.last_learned.strftime("%Y-%m-%d %H:%M:%S") }}</span>
-      </p>
-      {% endif %}
-      {% if item.next_iteration %}
-      <p class="mx-1">
-        <span class="italic">W</span>
-        <span class="font-semibold" moment-format="fromNow">{{ item.next_iteration.strftime("%Y-%m-%d %H:%M:%S") }}</span>
-      </p>
-      {% endif %}
-    </div>
-  </li>
-  {% endfor %}
-</ul>
 
 {% else %}
 

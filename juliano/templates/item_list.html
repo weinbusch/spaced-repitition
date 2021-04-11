@@ -1,11 +1,19 @@
 {% extends "layout.html" %}
 
 {% block main %}
-<p class="flex justify-around">
-  <a class="" href="{{ url_for('index') }}">Zurück zur Startseite</a>
-</p>
-<p class="mt-8">
-  Hier ist eine Liste der Wörter, die Du bereits eingegeben hast:
+
+<div class="mt-2">
+  <a href="{{ url_for('index') }}"
+     class="p-4 block rounded-full leading-none bg-indigo-500 text-gray-100">
+    <span class="mr-2">&#12296;</span>
+    Zurück zur Startseite
+  </a>
+</div>
+
+{% if items %}
+
+<p class="mt-4">
+  Hier ist eine Liste der Begriffe, die Du bereits eingegeben hast:
 </p>
 <ul class="-m-2 mt-2 flex flex-wrap justify-between">
   {% for item in items %}
@@ -40,5 +48,7 @@
   </li>
   {% endfor %}
 </ul>
-
+{% else %}
+<p class="mt-4">Du hast noch keine Begriffe eingegeben.</p>
+{% endif %}
 {% endblock %}
