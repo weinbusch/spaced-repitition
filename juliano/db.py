@@ -4,7 +4,6 @@ from contextlib import contextmanager
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy.engine import Engine
 from sqlalchemy import event
 
 
