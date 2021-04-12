@@ -14,7 +14,13 @@ from flask_login import login_required, login_user, logout_user, current_user
 from .app import app, db_session
 from .models import Item
 from .forms import ItemForm, TrainForm
-from .auth import get_authenticated_user, LoginForm, create_user, RegisterForm
+from .auth import (
+    get_authenticated_user,
+    LoginForm,
+    create_user,
+    RegisterForm,
+    token_required,
+)
 from .spaced_repitition import (
     get_item,
     update_item,
@@ -44,15 +50,20 @@ def index():
 @app.route("/list", methods=["GET"])
 @login_required
 def item_list():
-    items = get_items_for_user(db_session, user=current_user).all()
+    items = get_items_for_user(
+        db_session, user=current_user, include_inactive=True
+    ).all()
     return render_template("item_list.html", items=items)
 
 
 @app.route("/item/activate/<item_id>", methods=["PATCH"])
+@token_required
 def item_activate(item_id):
     item = get_item(db_session, item_id)
     if item is None:
         return abort(404)
+    if current_user != item.user:
+        return abort(403)
     item.is_active = request.json["is_active"]
     db_session.commit()
     return jsonify(item.to_dict())

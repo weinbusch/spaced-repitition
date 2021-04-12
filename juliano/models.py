@@ -1,4 +1,5 @@
 import datetime
+import secrets
 
 from sqlalchemy import (
     Column,
@@ -27,9 +28,15 @@ class User(UserMixin, Base):
     id = Column(Integer, primary_key=True)
     username = Column(Text, unique=True)
     password_hash = Column(Text)
+    token = Column(Text, index=True, unique=True)
 
     def get_id(self):
         return str(self.id)
+
+    def get_token(self):
+        if not self.token:
+            self.token = secrets.token_hex(32)
+        return self.token
 
 
 class Item(Base):

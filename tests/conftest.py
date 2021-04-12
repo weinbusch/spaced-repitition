@@ -39,6 +39,7 @@ def session(database):
 @pytest.fixture()
 def superuser(session):
     user = User(id=1, username="foo")
+    user.get_token()
     session.add(user)
     session.commit()
     return user
@@ -58,6 +59,17 @@ def flask_app(database):
 @pytest.fixture
 def flask_anonymous_client(flask_app):
     with flask_app.test_client() as client:
+        yield client
+
+
+@pytest.fixture
+def flask_token_client(flask_app, superuser):
+    with flask_app.test_client() as client:
+        client.environ_base.update(
+            {
+                "HTTP_AUTHORIZATION": f"Bearer {superuser.get_token()}",
+            }
+        )
         yield client
 
 

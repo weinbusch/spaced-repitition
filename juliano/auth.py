@@ -1,4 +1,9 @@
-from flask_login import LoginManager
+from functools import wraps
+
+from flask import abort
+
+from flask_login import LoginManager, current_user
+
 from wtforms import Form, StringField, PasswordField
 from wtforms.validators import InputRequired, EqualTo, ValidationError, Length
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -104,8 +109,32 @@ def get_user(session, id):
     return session.query(User).get(id)
 
 
+def get_user_from_token(session, token):
+    user = session.query(User).filter_by(token=token).one_or_none()
+    return user
+
+
 def get_authenticated_user(session, username, password):
     user = session.query(User).filter_by(username=username).one_or_none()
     if user and verify_password(user.password_hash, password):
         return user
     return None
+
+
+@login_manager.request_loader
+def load_user_from_request(request):
+    token = request.headers.get("Authorization", "")
+    if token.startswith("Bearer "):
+        _, token = token.split("Bearer ", maxsplit=1)
+        return get_user_from_token(db_session, token)
+    return None
+
+
+def token_required(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return abort(401)
+        return func(*args, **kwargs)
+
+    return decorated_view
