@@ -1,4 +1,13 @@
-from flask import render_template, request, redirect, url_for, flash, abort, current_app
+from flask import (
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    abort,
+    current_app,
+    jsonify,
+)
 
 from flask_login import login_required, login_user, logout_user, current_user
 
@@ -6,7 +15,12 @@ from .app import app, db_session
 from .models import Item
 from .forms import ItemForm, TrainForm
 from .auth import get_authenticated_user, LoginForm, create_user, RegisterForm
-from .spaced_repitition import update_item, get_items_for_user, get_weekly_word_calendar
+from .spaced_repitition import (
+    get_item,
+    update_item,
+    get_items_for_user,
+    get_weekly_word_calendar,
+)
 from .images import filenames
 
 
@@ -32,6 +46,16 @@ def index():
 def item_list():
     items = get_items_for_user(db_session, user=current_user).all()
     return render_template("item_list.html", items=items)
+
+
+@app.route("/item/activate/<item_id>", methods=["PATCH"])
+def item_activate(item_id):
+    item = get_item(db_session, item_id)
+    if item is None:
+        return abort(404)
+    item.is_active = request.json["is_active"]
+    db_session.commit()
+    return jsonify(item.to_dict())
 
 
 @app.route("/train", methods=["GET", "POST"])

@@ -6,6 +6,10 @@ from sqlalchemy import or_
 from .models import Item, Event
 
 
+def get_item(db_session, item_id):
+    return db_session.query(Item).get(item_id)
+
+
 def get_items_for_user(db_session, user, todo=False, include_inactive=False):
     query = db_session.query(Item).filter(Item.user == user)
 
