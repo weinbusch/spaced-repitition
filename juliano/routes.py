@@ -34,7 +34,9 @@ from .images import filenames
 @login_required
 def index():
     form = ItemForm(request.form)
-    items = get_items_for_user(db_session, user=current_user).all()
+    items = get_items_for_user(
+        db_session, user=current_user, include_inactive=True
+    ).all()
     calendar = get_weekly_word_calendar(items)
     todo_items = get_items_for_user(db_session, user=current_user, todo=True).all()
     if request.method == "POST" and form.validate():
