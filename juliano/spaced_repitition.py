@@ -24,7 +24,7 @@ def get_items_for_user(db_session, user, todo=False, include_inactive=False):
             )
         )
 
-    query = query.order_by(Item.next_iteration)
+    query = query.order_by(Item.is_active.desc(), Item.next_iteration)
 
     return query
 
