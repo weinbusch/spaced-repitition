@@ -11,7 +11,7 @@ from flask import (
 
 from flask_login import login_required, login_user, logout_user, current_user
 
-from .app import app, db_session
+from .app import app, csrf, db_session
 from .models import Item
 from .forms import ItemForm, TrainForm
 from .auth import (
@@ -57,6 +57,7 @@ def item_list():
 
 
 @app.route("/item/activate/<item_id>", methods=["PATCH"])
+@csrf.exempt
 @token_required
 def item_activate(item_id):
     item = get_item(db_session, item_id)
@@ -64,8 +65,9 @@ def item_activate(item_id):
         return abort(404)
     if current_user != item.user:
         return abort(403)
-    item.is_active = request.json["is_active"]
-    db_session.commit()
+    if request.json and "is_active" in request.json:
+        item.is_active = request.json.get("is_active")
+        db_session.commit()
     return jsonify(item.to_dict())
 
 
