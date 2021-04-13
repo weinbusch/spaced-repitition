@@ -2,51 +2,66 @@
 
 <html>
 
-<head>
+  <head>
 
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='build/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='build/styles.css') }}">
 
-  {% if title %}
-  <title>{{ title }} - Juliano</title>
-  {% else %}
-  <title>Willkommen bei Juliano</title>
-  {% endif %}
+    {% if title %}
+    <title>{{ title }} - Juliano</title>
+    {% else %}
+    <title>Willkommen bei Juliano</title>
+    {% endif %}
 
-  <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
-  <script src="https://unpkg.com/dayjs@1.8.21/plugin/utc.js"></script>
-  <script src="https://unpkg.com/dayjs@1.8.21/plugin/relativeTime.js"></script>
-  <script src="https://unpkg.com/dayjs@1.8.21/locale/de.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-  
-</head>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/plugin/utc.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/plugin/relativeTime.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/locale/de.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    
+  </head>
 
-<body class="h-screen antialiased text-gray-800">
-{% block body %}{% endblock %}
-<script>
-  dayjs.extend(window.dayjs_plugin_utc)
-  dayjs.extend(window.dayjs_plugin_relativeTime)
-  
-  var locale = "{{ g.locale or 'de' }}";
-  dayjs.locale(locale)
+  <body class="h-screen antialiased text-gray-800">
+    {% block body %}{% endblock %}
+    
+    <script>
+      dayjs.extend(window.dayjs_plugin_utc)
+      dayjs.extend(window.dayjs_plugin_relativeTime)
+      
+      var locale = "{{ g.locale or 'de' }}";
+      dayjs.locale(locale)
 
-  var datetimeNodes = document.querySelectorAll("span[moment-format]");
+      var datetimeNodes = document.querySelectorAll("span[moment-format]");
 
-  for (var i=0, j=datetimeNodes.length; i<j; i++){
-      var obj = datetimeNodes[i];
-      var utcDatetime = obj.textContent;
-      var datetime = dayjs.utc(utcDatetime).local()
-      var format = obj.getAttribute('moment-format');
-      if (format=='fromNow'){
-           obj.textContent = datetime.fromNow();
-      } else {
-          obj.textContent = datetime.format(format);
+      for (var i=0, j=datetimeNodes.length; i<j; i++){
+          var obj = datetimeNodes[i];
+          var utcDatetime = obj.textContent;
+          var datetime = dayjs.utc(utcDatetime).local()
+          var format = obj.getAttribute('moment-format');
+          if (format=='fromNow'){
+              obj.textContent = datetime.fromNow();
+          } else {
+              obj.textContent = datetime.format(format);
+          }
       }
-  }
-</script>
+    </script>
 
-</body>
+    <script>
+      const user_token = "{% if current_user.is_authenticated %}{{ current_user.get_token()}}{% endif %}";
+      function patch_request(url, data = {}){
+          return fetch(url, {
+              method: 'PATCH',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+          })
+              .then(response => response.json())
+      }
+    </script>
+
+  </body>
 
 </html>
