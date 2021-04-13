@@ -1,3 +1,5 @@
+import datetime
+
 from functools import wraps
 
 from flask import abort
@@ -12,15 +14,34 @@ from .models import User
 from .app import db_session
 
 
-login_manager = LoginManager()
+class TokenLoginManager(LoginManager):
+    def init_app(self, app, *args, **kwargs):
+        super().init_app(app, *args, **kwargs)
+
+        @app.before_request
+        def set_current_user_token():
+            if current_user.is_authenticated:
+                current_user.get_token()
+                db_session.add(current_user)
+                db_session.commit()
+
+
+login_manager = TokenLoginManager()
 login_manager.login_view = "login"
 
 
 @login_manager.user_loader
 def user_loader(id):
-    from juliano.app import get_db
+    return get_user(db_session, id)
 
-    return get_user(get_db(), id)
+
+@login_manager.request_loader
+def load_user_from_request(request):
+    data = request.headers.get("Authorization", "")
+    if data.startswith("Bearer "):
+        _, token = data.split("Bearer ", maxsplit=1)
+        return get_user_from_token(db_session, token)
+    return None
 
 
 class LoginForm(Form):
@@ -110,7 +131,10 @@ def get_user(session, id):
 
 
 def get_user_from_token(session, token):
+    now = datetime.datetime.utcnow()
     user = session.query(User).filter_by(token=token).one_or_none()
+    if user and user.token_expires < now:
+        return None
     return user
 
 
@@ -118,15 +142,6 @@ def get_authenticated_user(session, username, password):
     user = session.query(User).filter_by(username=username).one_or_none()
     if user and verify_password(user.password_hash, password):
         return user
-    return None
-
-
-@login_manager.request_loader
-def load_user_from_request(request):
-    token = request.headers.get("Authorization", "")
-    if token.startswith("Bearer "):
-        _, token = token.split("Bearer ", maxsplit=1)
-        return get_user_from_token(db_session, token)
     return None
 
 

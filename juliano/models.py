@@ -29,13 +29,16 @@ class User(UserMixin, Base):
     username = Column(Text, unique=True)
     password_hash = Column(Text)
     token = Column(Text, index=True, unique=True)
+    token_expires = Column(DateTime)
 
     def get_id(self):
         return str(self.id)
 
     def get_token(self):
-        if not self.token:
+        now = datetime.datetime.utcnow()
+        if not self.token or self.token_expires < now:
             self.token = secrets.token_hex(32)
+            self.token_expires = now + datetime.timedelta(seconds=60 * 60 * 24)
         return self.token
 
 

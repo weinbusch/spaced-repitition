@@ -1,9 +1,15 @@
+import datetime
+
 import pytest
 
 from flask import url_for
 
 from juliano.models import User
-from juliano.auth import generate_password_hash, get_authenticated_user
+from juliano.auth import (
+    generate_password_hash,
+    get_authenticated_user,
+    get_user_from_token,
+)
 
 
 @pytest.fixture(scope="module")
@@ -168,3 +174,50 @@ def test_get_authenticated_user_long_password(session, password_hash):
     )
 
     assert authenticated_user is None
+
+
+def test_get_token():
+    user = User()
+    user.get_token()
+    assert user.token is not None
+    assert user.token_expires is not None
+
+
+def test_get_expired_token():
+    now = datetime.datetime.utcnow()
+    user = User()
+    t1 = user.get_token()
+    user.token_expires = now - datetime.timedelta(seconds=1)
+    t2 = user.get_token()
+    assert t1 != t2
+    assert t2 == user.token
+
+
+def test_get_user_from_token(session):
+    user = User()
+    user.get_token()
+    session.add(user)
+    session.commit()
+
+    assert get_user_from_token(session, user.token) == user
+
+
+def test_get_user_from_wrong_token(session):
+    user = User()
+    user.get_token()
+    session.add(user)
+    session.commit()
+
+    assert get_user_from_token(session, "foo") is None
+
+
+def test_get_user_from_expired_token(session):
+    now = datetime.datetime.utcnow()
+
+    user = User()
+    user.get_token()
+    user.token_expires = now - datetime.timedelta(seconds=1)
+    session.add(user)
+    session.commit()
+
+    assert get_user_from_token(session, user.token) is None
