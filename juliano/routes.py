@@ -92,7 +92,7 @@ def login():
         user = get_authenticated_user(db_session, **form.data)
         if user:
             login_user(user)
-            return redirect("/")
+            return redirect(url_for("index"))
         flash(
             (
                 "Dein Benutzername und Passwort passen nicht zusammen. "
@@ -107,7 +107,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect("login")
+    return redirect(url_for("login"))
 
 
 @app.route("/register", methods=["GET", "POST"])
