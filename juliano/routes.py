@@ -34,11 +34,9 @@ from .images import filenames
 @login_required
 def index():
     form = ItemForm(request.form)
-    items = get_items_for_user(
-        db_session, user=current_user, include_inactive=True
-    ).all()
+    items = get_items_for_user(db_session, user=current_user, include_inactive=True)
     calendar = get_weekly_word_calendar(items)
-    todo_items = get_items_for_user(db_session, user=current_user, todo=True).all()
+    todo_items = get_items_for_user(db_session, user=current_user, todo=True)
     if request.method == "POST" and form.validate():
         item = Item(word=form.word.data, user=current_user)
         db_session.add(item)
@@ -52,9 +50,7 @@ def index():
 @app.route("/list", methods=["GET"])
 @login_required
 def item_list():
-    items = get_items_for_user(
-        db_session, user=current_user, include_inactive=True
-    ).all()
+    items = get_items_for_user(db_session, user=current_user, include_inactive=True)
     return render_template("item_list.html", items=items)
 
 
@@ -77,7 +73,7 @@ def item_activate(item_id):
 @login_required
 def train():
     form = TrainForm(request.form)
-    items = get_items_for_user(db_session, user=current_user, todo=True).all()
+    items = get_items_for_user(db_session, user=current_user, todo=True)
     if items and request.method == "POST" and form.validate():
         update_item(db_session, items[0], **form.data)
         db_session.commit()

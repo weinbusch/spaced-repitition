@@ -15,7 +15,7 @@ def test_get_items_for_user(session):
             Item(id=2, user=u2),
         ]
     )
-    items = get_items_for_user(session, u1).all()
+    items = get_items_for_user(session, u1)
     assert len(items) == 1 and items[0].id == 1
 
 
@@ -36,7 +36,7 @@ def test_get_items_sorted_by_due_date(session):
             ),
         ]
     )
-    items = get_items_for_user(session, user).all()
+    items = get_items_for_user(session, user)
     assert [x.id for x in items] == [2, 1]
 
 
@@ -55,7 +55,7 @@ def test_exclude_inactive_items(session):
             ),
         ]
     )
-    items = get_items_for_user(session, user).all()
+    items = get_items_for_user(session, user)
     assert len(items) == 2
 
 
@@ -74,7 +74,7 @@ def test_include_inactive_items(session):
             ),
         ]
     )
-    items = get_items_for_user(session, user, include_inactive=True).all()
+    items = get_items_for_user(session, user, include_inactive=True)
     assert len(items) == 3
 
 
@@ -97,7 +97,7 @@ def test_get_todo_items(session):
             ),
         ]
     )
-    items = get_items_for_user(session, user, todo=True).all()
+    items = get_items_for_user(session, user, todo=True)
     assert [x.id for x in items] == [1, 2]
 
 
@@ -116,7 +116,7 @@ def test_exclude_inactive_items_from_todo_list(session):
             ),
         ]
     )
-    todo_items = get_items_for_user(session, user, todo=True).all()
+    todo_items = get_items_for_user(session, user, todo=True)
     assert len(todo_items) == 2
 
 
