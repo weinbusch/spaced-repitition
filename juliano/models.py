@@ -59,7 +59,10 @@ class Item(Base):
 
     user = relationship("User")
     events = relationship(
-        "Event", order_by="Event.created.desc()", cascade="all, delete", lazy="joined"
+        "Event",
+        order_by="Event.created.desc()",
+        cascade="all, delete",
+        lazy="joined",
     )
 
     @property
@@ -79,6 +82,13 @@ class Item(Base):
             "word": self.word,
             "is_active": self.is_active,
         }
+
+    @property
+    def todo(self):
+        return (
+            self.next_iteration is None
+            or self.next_iteration <= datetime.datetime.utcnow()
+        )
 
 
 class Event(Base):

@@ -6,6 +6,9 @@ from sqlalchemy.exc import IntegrityError
 from juliano.models import Item, User, Event
 
 
+now = datetime.datetime.utcnow()
+
+
 def test_items_are_unique_for_word_and_user(session):
     u1 = User(id=1)
     u2 = User(id=2)
@@ -78,3 +81,17 @@ def test_deleting_item_deletes_all_associated_events(session):
     session.commit()
 
     assert session.query(Event).count() == 0
+
+
+@pytest.mark.parametrize(
+    "date, todo",
+    [
+        (now, True),
+        (now + datetime.timedelta(days=1), False),
+        (now - datetime.timedelta(days=1), True),
+        (None, True),
+    ],
+)
+def test_item_todo(date, todo):
+    item = Item(word="foo", next_iteration=date)
+    assert item.todo == todo
