@@ -85,7 +85,7 @@ class Item(Base):
 
     @property
     def todo(self):
-        return (
+        return self.is_active and (
             self.next_iteration is None
             or self.next_iteration <= datetime.datetime.utcnow()
         )

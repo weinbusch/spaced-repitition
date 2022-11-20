@@ -93,5 +93,10 @@ def test_deleting_item_deletes_all_associated_events(session):
     ],
 )
 def test_item_todo(date, todo):
-    item = Item(word="foo", next_iteration=date)
+    item = Item(word="foo", next_iteration=date, is_active=True)
     assert item.todo == todo
+
+
+def test_item_inactive_not_todo():
+    item = Item(next_iteration=now, is_active=False)
+    assert not item.todo
