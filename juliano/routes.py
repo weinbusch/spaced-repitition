@@ -36,7 +36,7 @@ def index():
     form = ItemForm(request.form)
     items = get_items_for_user(db_session, user=current_user, include_inactive=True)
     calendar = get_weekly_word_calendar(items)
-    todo_items = get_items_for_user(db_session, user=current_user, todo=True)
+    todo_items = [item for item in items if item.todo]
     if request.method == "POST" and form.validate():
         item = Item(word=form.word.data, user=current_user)
         db_session.add(item)
