@@ -11,22 +11,21 @@ def get_item(db_session, item_id):
 
 
 def get_items_for_user(db_session, user, todo=False, include_inactive=False):
-    query = db_session.query(Item).filter(Item.user == user)
+    query = (
+        db_session.query(Item)
+        .filter(Item.user == user)
+        .order_by(Item.is_active.desc(), Item.next_iteration)
+    )
 
     if not include_inactive:
         query = query.filter(Item.is_active.is_(True))
 
+    items = query.all()
+
     if todo:
-        query = query.filter(
-            or_(
-                Item.next_iteration <= datetime.datetime.utcnow(),
-                Item.next_iteration.is_(None),
-            )
-        )
+        items = [item for item in items if item.todo]
 
-    query = query.order_by(Item.is_active.desc(), Item.next_iteration)
-
-    return query.all()
+    return items
 
 
 def update_item(db_session, item, grade):
