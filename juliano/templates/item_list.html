@@ -17,45 +17,44 @@
 </p>
 <ul class="-m-2 mt-2 flex flex-wrap justify-between">
   {% for item in items %}
-  <li x-data='{{ item.to_dict() | tojson }}'
-      class=" m-2 py-2 px-4 flex flex-col flex-grow bg-gray-100 rounded-lg">
-    <p class="pb-1 border-b border-gray-300 text-center text-lg text-indigo-700">
-      {{ item.word }}
-    </p>
-    <div class="mt-1 flex-grow flex flex-col items-center text-sm text-gray-600">
-      <div class="flex">
-        <p>
-          <span class="italic">N</span>
-          <span class="font-semibold">{{ item.repitition_number }}</span>
-        </p>
-        <p class="ml-2">
-          <span class="italic">E</span>
-          <span class="font-semibold">{{ "{:.3}".format(item.easiness_factor) }}</span>
-        </p>
+  <li x-data='{{ item.to_dict() | tojson }}'>
+    <div x-on:click="patch_request('{{ url_for('item_activate', item_id=item.id) }}', {'is_active': !is_active}).then(data => is_active = data.is_active)"
+	 class=" m-2 p-2 flex flex-col flex-grow bg-gray-100 hover:ring rounded-lg cursor-pointer">
+      <p class="pb-1 border-b border-gray-300 text-center text-lg text-indigo-700">
+	{{ item.word }}
+      </p>
+      <div class="mt-1 flex-grow flex flex-col items-center text-sm text-gray-600">
+	<div class="flex">
+          <p>
+            <span class="italic">N</span>
+            <span class="font-semibold">{{ item.repitition_number }}</span>
+          </p>
+          <p class="ml-2">
+            <span class="italic">E</span>
+            <span class="font-semibold">{{ "{:.3}".format(item.easiness_factor) }}</span>
+          </p>
+	</div>
+	{% if item.last_learned %}
+	<p>
+          <span class="italic">zuletzt</span>
+          <span moment-format="fromNow">{{ item.last_learned.strftime("%Y-%m-%d %H:%M:%S") }}</span>
+	</p>
+	{% endif %}
+	{% if item.next_iteration %}
+	<p>
+          <span class="italic">wieder</span>
+          <span class="font-semibold" moment-format="fromNow">{{ item.next_iteration.strftime("%Y-%m-%d %H:%M:%S") }}</span>
+	</p>
+	{% endif %}
       </div>
-      {% if item.last_learned %}
-      <p>
-        <span class="italic">L</span>
-        <span moment-format="fromNow">{{ item.last_learned.strftime("%Y-%m-%d %H:%M:%S") }}</span>
-      </p>
-      {% endif %}
-      {% if item.next_iteration %}
-      <p>
-        <span class="italic">W</span>
-        <span class="font-semibold" moment-format="fromNow">{{ item.next_iteration.strftime("%Y-%m-%d %H:%M:%S") }}</span>
-      </p>
-      {% endif %}
-    </div>
-    <div class="mt-1 flex justify-center">
-      <a class="cursor-pointer"
-         x-on:click="patch_request('{{ url_for('item_activate', item_id=item.id) }}', {'is_active': !is_active}).then(data => is_active = data.is_active)">
+      <div class="mt-1 flex justify-center">
         <template x-if="is_active">
           <span class="text-green-500 font-semibold">Aktiv</span>
         </template>
         <template x-if="!is_active">
           <span class="text-red-500 font-semibold">Inaktiv</span>
         </template>
-      </a>
+      </div>
     </div>
   </li>
   {% endfor %}
