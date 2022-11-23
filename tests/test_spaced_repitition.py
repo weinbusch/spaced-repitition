@@ -1,6 +1,6 @@
 import datetime
 
-from juliano.models import Item, User
+from juliano.models import Item, User, Event
 from juliano.spaced_repitition import get_items_for_user, update_item
 
 
@@ -118,6 +118,28 @@ def test_exclude_inactive_items_from_todo_list(session):
     )
     todo_items = get_items_for_user(session, user, todo=True)
     assert len(todo_items) == 2
+
+
+def test_limit_number_of_todo_items(session):
+    user = User(id=1)
+    now = datetime.datetime.utcnow()
+    items = [Item(user=user, id=pk, next_iteration=now) for pk in range(100)]
+    session.add_all(items)
+    todo_items = get_items_for_user(session, user, todo=True, maximum_todo=10)
+    assert len(todo_items) == 10
+
+
+def test_maximum_number_of_calculated_based_on_events(session):
+    user = User(id=1)
+    now = datetime.datetime.utcnow()
+    today = datetime.date.today()
+    items = [Item(user=user, id=pk, next_iteration=now) for pk in range(100)]
+    session.add_all(items)
+    session.add(Event(id=1, item_id=1, grade=1, created=now))
+    session.commit()
+    item = session.query(Item).get(1)
+    todo_items = get_items_for_user(session, user, todo=True, maximum_todo=10)
+    assert len(todo_items) == 9
 
 
 def test_update_item_sets_last_learned_timestamp(session):

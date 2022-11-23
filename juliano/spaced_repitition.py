@@ -10,7 +10,10 @@ def get_item(db_session, item_id):
     return db_session.query(Item).get(item_id)
 
 
-def get_items_for_user(db_session, user, todo=False, include_inactive=False):
+def get_items_for_user(
+    db_session, user, todo=False, maximum_todo=None, include_inactive=False
+):
+    today = datetime.date.today()
     query = (
         db_session.query(Item)
         .filter(Item.user == user)
@@ -24,12 +27,22 @@ def get_items_for_user(db_session, user, todo=False, include_inactive=False):
 
     if todo:
         items = [item for item in items if item.todo]
+        if maximum_todo:
+            learned_today = len(
+                [
+                    item
+                    for item in items
+                    if item.last_learned and item.last_learned.date() == today
+                ]
+            )
+            n = max(maximum_todo - learned_today, 0)
+            items = items[:n]
 
     return items
 
 
 def update_item(db_session, item, grade):
-    """Spaced repition algorithm
+    """Spaced repitition algorithm
 
     https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm
     """
