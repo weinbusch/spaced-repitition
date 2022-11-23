@@ -1,9 +1,9 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-    purge: [
+    content: [
         './juliano/**/*.html',
         './juliano/**/*.js'
     ],
-    darkMode: false, // or 'media' or 'class'
     theme: {
         extend: {},
     },

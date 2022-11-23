@@ -2,28 +2,14 @@
   "name": "spaced-repitition",
   "version": "0.0.1",
   "description": "",
+  "main": "tailwind.config.js",
   "directories": {
     "test": "tests"
   },
+  "dependencies": {
+    "tailwindcss": "^3.2.4"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/weinbusch/spaced-repitition.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/weinbusch/spaced-repitition/issues"
-  },
-  "homepage": "https://github.com/weinbusch/spaced-repitition#readme",
-  "devDependencies": {
-    "autoprefixer": "^10.0.2",
-    "gulp": "^4.0.2",
-    "gulp-cli": "^2.3.0",
-    "gulp-postcss": "^9.0.0",
-    "postcss": "^8.1.10",
-    "tailwindcss": "^2.0.1"
+      "tailwind": "tailwindcss --watch -i juliano/static/src/styles.css -o juliano/static/build/styles.css"
   }
 }
