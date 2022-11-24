@@ -1,17 +1,33 @@
 import datetime
+import secrets
 
 from functools import wraps
 
 from flask import abort
 
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager, current_user, UserMixin
+
 
 from wtforms import Form, StringField, PasswordField
 from wtforms.validators import InputRequired, EqualTo, ValidationError, Length
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from .models import User
 from .app import db_session
+
+
+class User(UserMixin):
+    def __init__(self, username=None, password_hash=None, id=None):
+        self.id = id
+        self.username = username
+        self.password_hash = password_hash
+        self.token = None
+
+    def get_token(self):
+        now = datetime.datetime.utcnow()
+        if not self.token or self.token_expires < now:
+            self.token = secrets.token_hex(32)
+            self.token_expires = now + datetime.timedelta(seconds=60 * 60 * 24)
+        return self.token
 
 
 class TokenLoginManager(LoginManager):

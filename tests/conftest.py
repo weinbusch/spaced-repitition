@@ -8,7 +8,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from juliano.app import app
-from juliano.models import Base, User
+from juliano.auth import User
+from juliano.schema import metadata
 
 
 @pytest.fixture(scope="session")
@@ -23,9 +24,9 @@ def engine():
 
 @pytest.fixture
 def database(engine):
-    Base.metadata.create_all(engine)
+    metadata.create_all(engine)
     yield engine
-    Base.metadata.drop_all(engine)
+    metadata.drop_all(engine)
 
 
 @pytest.fixture

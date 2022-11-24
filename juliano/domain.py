@@ -19,14 +19,20 @@ class Item:
         ]
     )
 
-    def __init__(self, word, id=None):
+    def __init__(
+        self, word=None, id=None, user=None, next_iteration=None, created=None
+    ):
         self.id = id
-        self.word = word
+        self.user = user
+        self.word = word or ""
         self.is_active = True
-        self.created = datetime.datetime.utcnow()
+        self.created = created or datetime.datetime.utcnow()
         self.events = []
-        self.repitition_number = 0
         self.easiness_factor = 2.5
+        self.inter_repitition_interval = datetime.timedelta(days=1)
+        self.next_iteration = (
+            next_iteration or self.created + self.inter_repitition_interval
+        )
 
     def to_dict(self):
         return dict(id=self.id, word=self.word, is_active=self.is_active)
@@ -34,6 +40,10 @@ class Item:
     @property
     def last_learned(self):
         return max((event.created for event in self.events), default=None)
+
+    @property
+    def repitition_number(self):
+        return len(self.events)
 
     def add_event(self, grade, created=None):
         event = Event(grade, created)
@@ -47,9 +57,7 @@ class Item:
         """
         event = self.add_event(grade)
 
-        if self.repitition_number < 3:
-            self.inter_repitition_interval = datetime.timedelta(days=1)
-        else:
+        if self.repitition_number > 2:
             self.inter_repitition_interval = (
                 self.inter_repitition_interval * self.easiness_factor
             )
@@ -67,3 +75,19 @@ class Item:
             self.next_iteration is None
             or (self.next_iteration.date() <= datetime.date.today())
         )
+
+
+def filter_todo_items(items, n=None):
+    todos = [item for item in items if item.todo]
+    if n:
+        today = datetime.date.today()
+        trained_today = len(
+            [
+                item
+                for item in items
+                if item.last_learned and item.last_learned.date() == today
+            ]
+        )
+        limit = max(0, n - trained_today)
+        return todos[0:limit]
+    return todos

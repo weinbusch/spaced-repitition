@@ -2,7 +2,10 @@ import datetime
 
 from flask import url_for
 
-from juliano.models import Item, User
+from juliano.domain import Item
+from juliano.auth import User
+
+now = datetime.datetime.utcnow()
 
 
 def test_index_redirects_anonymous_user(flask_anonymous_client):
@@ -28,24 +31,26 @@ def test_create_item_with_very_long_word(flask_client, session):
     assert response.status_code == 200
 
 
-def test_items_list_view(flask_client, session):
-    session.add(Item(user_id=1, word="foobarbaz"))
+def test_items_list_view(superuser, flask_client, session):
+    session.add(Item(user=superuser, word="foobarbaz"))
     session.commit()
     response = flask_client.get(url_for("item_list"))
     assert response.status_code == 200
     assert b"foobarbaz" in response.data
 
 
-def test_train_view_shows_next_item(flask_client, session):
-    session.add(Item(user_id=1, word="foobarbaz"))
+def test_train_view_shows_next_item(superuser, flask_client, session):
+    session.add(Item(user=superuser, word="foobarbaz", next_iteration=now))
     session.commit()
     response = flask_client.get(url_for("train"))
     assert response.status_code == 200
     assert b"foobarbaz" in response.data
 
 
-def test_train_view_post_grade_increments_repitition_number(flask_client, session):
-    item = Item(user_id=1, word="foo")
+def test_train_view_post_grade_increments_repitition_number(
+    superuser, flask_client, session
+):
+    item = Item(user=superuser, word="foo", next_iteration=now)
     session.add(item)
     session.commit()
     response = flask_client.post(url_for("train"), data={"grade": "5"})
@@ -54,25 +59,27 @@ def test_train_view_post_grade_increments_repitition_number(flask_client, sessio
     assert item.repitition_number == 1
 
 
-def test_train_view_cycles_through_pending_items(flask_client, session):
+def test_train_view_cycles_through_pending_items(superuser, flask_client, session):
     url = url_for("train")
     now = datetime.datetime.utcnow()
+
+    other_user = User(id=2)
 
     session.add_all(
         [
             Item(
-                user_id=1,
+                user=superuser,
                 word="barbazfoo",
                 next_iteration=now - datetime.timedelta(days=2),
             ),
             Item(
-                user_id=1,
+                user=superuser,
                 word="bazfoobar",
                 next_iteration=now - datetime.timedelta(days=1),
             ),
-            User(id=2),
+            other_user,
             Item(
-                user_id=2,  # this item should be skipped!
+                user=other_user,  # this item should be skipped!
                 word="foobarbaz",
                 next_iteration=now - datetime.timedelta(days=3),
             ),
@@ -108,8 +115,8 @@ def test_train_view_if_no_items_are_pending(flask_client):
     assert response.status_code == 200
 
 
-def test_item_activate(flask_token_client, session):
-    item = Item(id=1, user_id=1, word="foo", is_active=True)
+def test_item_activate(superuser, flask_token_client, session):
+    item = Item(id=1, user=superuser, word="foo")
     session.add(item)
     session.commit()
 
@@ -121,8 +128,8 @@ def test_item_activate(flask_token_client, session):
     assert response.json == {"id": 1, "word": "foo", "is_active": False}
 
 
-def test_item_activate_is_persistent(flask_token_client, session):
-    item = Item(id=1, user_id=1, word="foo", is_active=True)
+def test_item_activate_is_persistent(superuser, flask_token_client, session):
+    item = Item(id=1, user=superuser, word="foo")
     session.add(item)
     session.commit()
 
@@ -140,8 +147,10 @@ def test_item_activate_wrong_item_id(flask_token_client):
     assert response.status_code == 404
 
 
-def test_item_activate_reject_anonymous_user(flask_anonymous_client, session):
-    session.add(Item(id=1, user_id=1))
+def test_item_activate_reject_anonymous_user(
+    superuser, flask_anonymous_client, session
+):
+    session.add(Item(id=1, user=superuser))
     session.commit()
     response = flask_anonymous_client.patch(
         url_for("item_activate", item_id=1), json={"is_active": False}
@@ -150,7 +159,8 @@ def test_item_activate_reject_anonymous_user(flask_anonymous_client, session):
 
 
 def test_item_activate_reject_unauthorized_user(flask_token_client, session):
-    session.add(Item(id=1, user_id=2))
+    other_user = User()
+    session.add(Item(id=1, user=other_user))
     session.commit()
     response = flask_token_client.patch(
         url_for("item_activate", item_id=1), json={"is_active": False}

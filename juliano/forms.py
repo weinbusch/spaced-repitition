@@ -4,7 +4,7 @@ from wtforms.validators import InputRequired, ValidationError, Length
 from flask_login import current_user
 
 from .app import db_session
-from .models import Item
+from .domain import Item
 
 
 def validate_unique_word(form, field):

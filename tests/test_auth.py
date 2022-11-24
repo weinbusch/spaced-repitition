@@ -4,8 +4,8 @@ import pytest
 
 from flask import url_for
 
-from juliano.models import User
 from juliano.auth import (
+    User,
     generate_password_hash,
     get_authenticated_user,
     get_user_from_token,

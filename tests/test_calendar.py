@@ -1,6 +1,6 @@
 import datetime
-from juliano.models import Item
-from juliano.spaced_repitition import get_word_calendar, get_weekly_word_calendar
+from juliano.domain import Item
+from juliano.calendar import get_word_calendar, get_weekly_word_calendar
 
 
 def test_word_calender_returns_calendar_maximum_value():

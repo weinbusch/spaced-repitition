@@ -1,6 +1,6 @@
 import pytest
 import datetime
-from juliano.domain import Item
+from juliano.domain import Item, filter_todo_items
 
 now = datetime.datetime.utcnow()
 
@@ -8,6 +8,7 @@ now = datetime.datetime.utcnow()
 def test_create_item():
     item = Item(word="foo")
     assert item.is_active is True
+    assert item.next_iteration > now
 
 
 def test_item_to_dict():
@@ -82,5 +83,32 @@ def test_item_todo(date, todo):
 def test_inactive_items_are_not_marked_as_todo():
     item = Item(word="foo")
     item.next_iteration = now
+    assert item.todo is True
+
     item.is_active = False
     assert item.todo is False
+
+
+def test_filter_todo_items():
+    items = [Item(word="todo", next_iteration=now) for _ in range(10)] + [
+        Item(word="not_todo", next_iteration=now + datetime.timedelta(days=1))
+        for _ in range(10)
+    ]
+    todo_items = filter_todo_items(items)
+    assert len(todo_items) == 10
+    assert all(item.word == "todo" for item in todo_items)
+
+
+def test_filter_todo_items_max_number():
+    items = [Item(word="todo", next_iteration=now) for _ in range(20)]
+    todo_items = filter_todo_items(items, n=10)
+    assert len(todo_items) == 10
+
+
+def test_filter_todo_items_max_number_takes_events_into_account():
+    items = [Item(word="todo", next_iteration=now) for _ in range(20)]
+    items[0].train(5)
+    # one item was trained today, so we should only return 9 todo
+    # items
+    todo_items = filter_todo_items(items, n=10)
+    assert len(todo_items) == 9

@@ -1,13 +1,9 @@
 from flask import Flask, g, current_app
 from werkzeug.local import LocalProxy
-from flask.logging import default_handler
 from flask_wtf.csrf import CSRFProtect
 
-from .db import connect, disconnect, db_logger
-from .images import get_random_image
-
-db_logger.addHandler(default_handler)
-
+from juliano.db import connect, disconnect
+from juliano.images import get_random_image
 
 app = Flask(__name__)
 
@@ -49,3 +45,7 @@ def animals_processor():
 
 
 import juliano.routes  # noqa: E402, F401
+
+from juliano.schema import init_mappers  # noqa: E402
+
+init_mappers()
