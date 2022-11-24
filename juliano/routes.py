@@ -38,7 +38,7 @@ def index():
         return redirect(url_for("index"))
     items = repo.list(current_user)
     calendar = get_weekly_word_calendar(items)
-    todo_items = filter_todo_items(items)
+    todo_items = filter_todo_items(items, n=10)
     return render_template(
         "index.html", items=items, form=form, todo_items=todo_items, calendar=calendar
     )
@@ -73,7 +73,7 @@ def item_activate(item_id):
 def train():
     repo = Repository(db_session)
     items = repo.list(current_user)
-    items = filter_todo_items(items)
+    items = filter_todo_items(items, n=10)
     form = TrainForm(request.form)
     if items and request.method == "POST" and form.validate():
         items[0].train(**form.data)
