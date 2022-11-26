@@ -7,7 +7,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from juliano.app import app
+from juliano.app import create_app
 from juliano.auth import User
 from juliano.schema import metadata
 
@@ -48,6 +48,7 @@ def superuser(session):
 
 @pytest.fixture
 def flask_app(database):
+    app = create_app()
     app.config["TESTING"] = True
     app.config["SERVER_NAME"] = "test.localdomain"
     app.config["WTF_CSRF_ENABLED"] = False

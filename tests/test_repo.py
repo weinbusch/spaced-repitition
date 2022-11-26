@@ -1,6 +1,8 @@
 import pytest
 import datetime
+import contextlib
 
+from sqlalchemy import event
 from sqlalchemy.exc import IntegrityError
 
 from juliano.repo import Repository
@@ -8,6 +10,20 @@ from juliano.domain import Item
 from juliano.auth import User
 
 now = datetime.datetime.utcnow()
+
+
+@contextlib.contextmanager
+def count_sql_statements(engine):
+    stmts = []
+
+    def count(**kwargs):
+        s = kwargs.get("statement", None)
+        if s:
+            stmts.append(s)
+
+    event.listen(engine, "before_cursor_execute", count, named=True)
+    yield stmts
+    event.remove(engine, "before_cursor_execute", count)
 
 
 def create_user(session, username):
@@ -29,19 +45,13 @@ def test_create_user(session):
 
 
 def test_item_roundtrip(session):
-    foo = create_user(session, "foo")
-    bar = create_user(session, "bar")
-
     repo = Repository(session)
 
-    repo.add(Item(word="foo", user=foo))
-    repo.add(Item(word="bar", user=bar))
-
-    session.commit()
-
-    item = repo.get(1)
+    foo = create_user(session, "foo")
+    item = Item(word="foo", user=foo)
     item.train(5)
 
+    repo.add(item)
     session.commit()
 
     item = repo.get(1)
@@ -110,3 +120,22 @@ def test_items_sorted_by_due_date(session):
     assert [item.next_iteration for item in items] == [
         now + datetime.timedelta(days=d) for d in [1, 2, 3, 4, 5, 6, 7, 8, 9]
     ]
+
+
+def test_repo_issues_one_select_statement(engine, session):
+    repo = Repository(session)
+    user = User(username="foo")
+    for word in ["foo", "bar", "baz"]:
+        item = Item(word=word, user=user)
+        item.train(5)
+        repo.add(item)
+    session.commit()
+
+    assert user.username == "foo"
+    # otherwise, repo.list(user) issues a select statement targeting
+    # the users table
+
+    with count_sql_statements(engine) as stmts:
+        items = repo.list(user=user)
+        assert all(item.events for item in items)
+        assert len(stmts) == 1

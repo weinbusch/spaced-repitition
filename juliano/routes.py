@@ -1,3 +1,5 @@
+from functools import wraps
+
 from flask import (
     render_template,
     request,
@@ -11,26 +13,56 @@ from flask import (
 
 from flask_login import login_required, login_user, logout_user, current_user
 
-from juliano.app import app, csrf, db_session
+from juliano.db import db_session
 from juliano.domain import Item, filter_todo_items
-from juliano.forms import ItemForm, TrainForm
-from juliano.auth import (
-    get_authenticated_user,
-    LoginForm,
-    create_user,
-    RegisterForm,
-    token_required,
-)
-from juliano.repo import Repository
+from juliano.forms import ItemForm, TrainForm, LoginForm, RegisterForm
+from juliano.repo import Repository, UserRepository
 from juliano.calendar import get_weekly_word_calendar
 from juliano.images import filenames
 
 
-@app.route("/", methods=["GET", "POST"])
+def token_required(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return abort(401)
+        return func(*args, **kwargs)
+
+    return decorated_view
+
+
+class Router:
+    def __init__(self):
+        self.routes = []
+
+    def route(self, rule, **options):
+        def decorator(func):
+            self.register(rule, func, options)
+
+            @wraps(func)
+            def wrapped_function(*args, **kwargs):
+                return func(*args, **kwargs)
+
+            return wrapped_function
+
+        return decorator
+
+    def register(self, rule, view_func, options):
+        self.routes.append((rule, view_func, options))
+
+    def init_app(self, app):
+        for rule, view_func, options in self.routes:
+            app.add_url_rule(rule, view_func=view_func, **options)
+
+
+router = Router()
+
+
+@router.route("/", methods=["GET", "POST"])
 @login_required
 def index():
     repo = Repository(db_session)
-    form = ItemForm(request.form)
+    form = ItemForm(request.form, user=current_user, repo=repo)
     if request.method == "POST" and form.validate():
         item = Item(word=form.word.data, user=current_user)
         repo.add(item)
@@ -44,7 +76,7 @@ def index():
     )
 
 
-@app.route("/list", methods=["GET"])
+@router.route("/list", methods=["GET"])
 @login_required
 def item_list():
     repo = Repository(db_session)
@@ -52,8 +84,7 @@ def item_list():
     return render_template("item_list.html", items=items)
 
 
-@app.route("/item/activate/<item_id>", methods=["PATCH"])
-@csrf.exempt
+@router.route("/item/activate/<item_id>", methods=["PATCH"])
 @token_required
 def item_activate(item_id):
     repo = Repository(db_session)
@@ -68,7 +99,7 @@ def item_activate(item_id):
     return jsonify(item.to_dict())
 
 
-@app.route("/train", methods=["GET", "POST"])
+@router.route("/train", methods=["GET", "POST"])
 @login_required
 def train():
     repo = Repository(db_session)
@@ -82,11 +113,12 @@ def train():
     return render_template("train.html", items=items, form=form)
 
 
-@app.route("/login", methods=["GET", "POST"])
+@router.route("/login", methods=["GET", "POST"])
 def login():
+    repo = UserRepository(db_session)
     form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
-        user = get_authenticated_user(db_session, **form.data)
+        user = repo.get_authenticated_user(**form.data)
         if user:
             login_user(user)
             return redirect(url_for("index"))
@@ -100,30 +132,30 @@ def login():
     return render_template("login.html", form=form)
 
 
-@app.route("/logout")
+@router.route("/logout", methods=["GET"])
 @login_required
 def logout():
     logout_user()
     return redirect(url_for("login"))
 
 
-@app.route("/register", methods=["GET", "POST"])
+@router.route("/register", methods=["GET", "POST"])
 def register():
     if not current_app.config["REGISTER_VIEW"]:
         return abort(404)
-    form = RegisterForm(request.form)
+    user_repo = UserRepository(db_session)
+    form = RegisterForm(request.form, users=user_repo.list())
     if request.method == "POST" and form.validate():
-        user = create_user(form.username.data, form.password.data)
-        db_session.add(user)
+        user = user_repo.create_user(form.username.data, form.password.data)
         db_session.commit()
         login_user(user)
         return redirect(url_for("index"))
     return render_template("register.html", form=form)
 
 
-@app.route("/images")
+@router.route("/images", methods=["GET"])
 @login_required
 def all_images():
-    if not app.config["DEBUG"]:
+    if not current_app.config["DEBUG"]:
         abort(404)
     return render_template("images.html", filenames=filenames)

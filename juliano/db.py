@@ -1,3 +1,6 @@
+from flask import current_app, g
+from werkzeug.local import LocalProxy
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import event
@@ -24,3 +27,12 @@ def connect(path):
 
 def disconnect(session):
     session.close()
+
+
+def get_db():
+    if "_db" not in g:
+        g._db = connect(current_app.config["DB_PATH"])
+    return g._db
+
+
+db_session = LocalProxy(get_db)

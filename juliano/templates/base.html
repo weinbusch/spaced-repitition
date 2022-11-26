@@ -50,10 +50,12 @@
 
     <script>
       const user_token = "{% if current_user.is_authenticated %}{{ current_user.get_token()}}{% endif %}";
+      const csrf_token = "{{ csrf_token() }}";
       function patch_request(url, data = {}){
           return fetch(url, {
               method: 'PATCH',
               headers: {
+		  'X-CSRFToken': csrf_token,
                   'Content-Type': 'application/json'
               },
               body: JSON.stringify(data)

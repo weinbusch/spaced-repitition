@@ -45,8 +45,8 @@ def init_mappers():
         Item,
         item_table,
         properties={
-            "events": relationship(Event),
-            "user": relationship(User),
+            "events": relationship(Event, lazy="joined"),
+            "user": relationship(User, lazy="joined"),
         },
     )
     mapper(Event, event_table)
