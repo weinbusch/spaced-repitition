@@ -44,6 +44,9 @@
     </label>
     {% endfor %}
   </div>
+  <p class="mt-1 text-center text-sm">
+    Je größer die Zahl, um so leichter ist Dir das Wort gefallen.
+  </p>
   {% for error in form.grade.errors %}
   <p class="mt-1 text-center text-sm text-red-700 font-semibold">{{ error }}</p>
   {% endfor %}

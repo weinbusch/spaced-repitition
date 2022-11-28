@@ -6,14 +6,14 @@
   <div class="max-w-screen-sm mx-auto px-4">
     <div class="py-2 flex flex-wrap justify-between">
       <div class="whitespace-no-wrap">
-        Hallo, <span class="font-semibold text-indigo-700">{{ current_user.username }}</span>!
+        Hallo, <span class="font-semibold text-indigo-500">{{ current_user.username }}</span>!
       </div>
       <div class="space-x-2 flex flex-row">
-	<a class="hover:text-indigo-700 hover:underline"
+	<a class="hover:text-indigo-500 hover:underline"
 	   href="{{ url_for('settings')}}">
 	  Einstellungen
 	</a>
-        <a class="hover:text-indigo-700 hover:underline"
+        <a class="hover:text-indigo-500 hover:underline"
            href="{{ url_for('logout') }}">
           Abmelden
         </a>

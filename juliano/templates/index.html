@@ -5,10 +5,10 @@
 {% if items %}
 
 {% if todo_items %}
-<h1 class="mt-8 text-center">
+<h1 class="mt-8">
   <a href="{{ url_for('train') }}"
-     class="inline-block px-10 py-4 bg-yellow-600 hover:bg-yellow-700
-     rounded-full text-white cursor-pointer">
+     class="p-4 block bg-indigo-500 hover:bg-indigo-600
+	    rounded-full leading-none text-white cursor-pointer">
     <div class="flex flex-col items-center">
       <p class="text-2xl">
         Übung beginnen
@@ -24,12 +24,13 @@
     </div>
   </a>
 </h1>
+
 <p class="mt-6 text-center text-gray-600 italic">
   - oder -
 </p>
 {% else %}
 <h1 class="mt-8 text-center">
-  <span class="inline-block px-10 py-4 border border-yellow-600 text-yellow-600 rounded-full font-semibold text-center">
+  <span class="inline-block px-10 py-4 border border-indigo-500 text-indigo-500 rounded-full font-semibold text-center">
     Heute stehen keine Übungen an.
   </span>
 </h1>
@@ -42,7 +43,7 @@
 {{ render_form(form, show_labels=False) }}
 
 <div class="mt-8 flex flex-row justify-around">
-  <a class="p-2 px-4 hover:underline text-indigo-700 border border-indigo-700 rounded-full"
+  <a class="p-2 px-4 hover:underline text-indigo-500 border border-indigo-500 rounded-full"
      href="{{ url_for('item_list') }}">
     Wortliste
   </a>  
