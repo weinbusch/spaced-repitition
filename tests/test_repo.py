@@ -5,7 +5,7 @@ import contextlib
 from sqlalchemy import event
 from sqlalchemy.exc import IntegrityError
 
-from juliano.repo import Repository
+from juliano.repo import ItemRepository
 from juliano.domain import Item
 from juliano.auth import User
 
@@ -45,7 +45,7 @@ def test_create_user(session):
 
 
 def test_item_roundtrip(session):
-    repo = Repository(session)
+    repo = ItemRepository(session)
 
     foo = create_user(session, "foo")
     item = Item(word="foo", user=foo)
@@ -72,7 +72,7 @@ def test_item_roundtrip(session):
 def test_get_items_for_user(session):
     foo = create_user(session, "foo")
     bar = create_user(session, "bar")
-    repo = Repository(session)
+    repo = ItemRepository(session)
     words = {"foo", "bar", "baz"}
     for word in words:
         repo.add(Item(word=word, user=foo))
@@ -84,7 +84,7 @@ def test_get_items_for_user(session):
 
 
 def test_items_are_unique_for_word_and_user(session):
-    repo = Repository(session)
+    repo = ItemRepository(session)
     foo = create_user(session, "foo")
     bar = create_user(session, "bar")
 
@@ -104,7 +104,7 @@ def test_items_are_unique_for_word_and_user(session):
 
 
 def test_items_sorted_by_due_date(session):
-    repo = Repository(session)
+    repo = ItemRepository(session)
     foo = create_user(session, "foo")
     for id, d in enumerate([7, 2, 1, 9, 4, 6, 3, 8, 5]):
         repo.add(
@@ -123,7 +123,7 @@ def test_items_sorted_by_due_date(session):
 
 
 def test_repo_issues_one_select_statement(engine, session):
-    repo = Repository(session)
+    repo = ItemRepository(session)
     user = User(username="foo")
     for word in ["foo", "bar", "baz"]:
         item = Item(word=word, user=user)

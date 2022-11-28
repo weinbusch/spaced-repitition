@@ -5,8 +5,10 @@ from juliano.auth import (
     get_user_from_token,
     get_authenticated_user,
     create_user,
-    verify_password,
 )
+from juliano.schema import init_mappers
+
+init_mappers()
 
 
 class UserRepository:
@@ -34,7 +36,7 @@ class UserRepository:
         return self.session.query(User).all()
 
 
-class Repository:
+class ItemRepository:
     def __init__(self, session):
         self.session = session
 

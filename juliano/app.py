@@ -3,13 +3,10 @@ from flask import Flask, g
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, current_user
 
-from juliano.db import disconnect, db_session
+from juliano.db import db_session
 from juliano.images import get_random_image
-from juliano.repo import UserRepository
-from juliano.schema import init_mappers
 from juliano.routes import router
 
-init_mappers()
 
 csrf = CSRFProtect()
 
@@ -24,7 +21,7 @@ class TokenLoginManager(LoginManager):
         def set_current_user_token():
             if current_user.is_authenticated:
                 current_user.get_token()
-                db_session.add(current_user)
+                db_session.users.add(current_user)
                 db_session.commit()
 
 
@@ -33,13 +30,13 @@ login_manager = TokenLoginManager()
 
 @login_manager.user_loader
 def user_loader(id):
-    repo = UserRepository(db_session)
+    repo = db_session.users
     return repo.get(id)
 
 
 @login_manager.request_loader
 def load_user_from_request(request):
-    repo = UserRepository(db_session)
+    repo = db_session.users
     data = request.headers.get("Authorization", "")
     if data.startswith("Bearer "):
         _, token = data.split("Bearer ", maxsplit=1)
@@ -64,7 +61,7 @@ def create_app(config=None):
     def teardown_db(exception):
         db = g.pop("_db", None)
         if db is not None:
-            disconnect(db)
+            db.disconnect()
 
     login_manager.init_app(app)
     csrf.init_app(app)

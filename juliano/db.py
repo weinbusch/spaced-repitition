@@ -5,6 +5,31 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import event
 
+from juliano.repo import UserRepository, ItemRepository
+
+
+class Session:
+    """Session
+
+    A wrapper around sqlalchemy `session' with additional pointers to
+    various repositories.
+
+    """
+
+    def __init__(self, path):
+        self.session = connect(path)
+        self.users = UserRepository(self.session)
+        self.items = ItemRepository(self.session)
+
+    def commit(self):
+        self.session.commit()
+
+    def rollback(self):
+        self.session.rollback()
+
+    def disconnect(self):
+        self.session.close()
+
 
 def activate_sqlite_fk_constraints(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
@@ -31,7 +56,7 @@ def disconnect(session):
 
 def get_db():
     if "_db" not in g:
-        g._db = connect(current_app.config["DB_PATH"])
+        g._db = Session(current_app.config["DB_PATH"])
     return g._db
 
 

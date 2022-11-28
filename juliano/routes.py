@@ -16,7 +16,6 @@ from flask_login import login_required, login_user, logout_user, current_user
 from juliano.db import db_session
 from juliano.domain import Item, filter_todo_items
 from juliano.forms import ItemForm, TrainForm, LoginForm, RegisterForm
-from juliano.repo import Repository, UserRepository
 from juliano.calendar import get_weekly_word_calendar
 from juliano.images import filenames
 
@@ -61,7 +60,7 @@ router = Router()
 @router.route("/", methods=["GET", "POST"])
 @login_required
 def index():
-    repo = Repository(db_session)
+    repo = db_session.items
     form = ItemForm(request.form, user=current_user, repo=repo)
     if request.method == "POST" and form.validate():
         item = Item(word=form.word.data, user=current_user)
@@ -79,7 +78,7 @@ def index():
 @router.route("/list", methods=["GET"])
 @login_required
 def item_list():
-    repo = Repository(db_session)
+    repo = db_session.items
     items = repo.list(current_user)
     return render_template("item_list.html", items=items)
 
@@ -87,7 +86,7 @@ def item_list():
 @router.route("/item/activate/<item_id>", methods=["PATCH"])
 @token_required
 def item_activate(item_id):
-    repo = Repository(db_session)
+    repo = db_session.items
     item = repo.get(item_id)
     if item is None:
         return abort(404)
@@ -102,7 +101,7 @@ def item_activate(item_id):
 @router.route("/train", methods=["GET", "POST"])
 @login_required
 def train():
-    repo = Repository(db_session)
+    repo = db_session.items
     items = repo.list(current_user)
     items = filter_todo_items(items, n=10)
     form = TrainForm(request.form)
@@ -115,7 +114,7 @@ def train():
 
 @router.route("/login", methods=["GET", "POST"])
 def login():
-    repo = UserRepository(db_session)
+    repo = db_session.users
     form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
         user = repo.get_authenticated_user(**form.data)
@@ -143,7 +142,7 @@ def logout():
 def register():
     if not current_app.config["REGISTER_VIEW"]:
         return abort(404)
-    user_repo = UserRepository(db_session)
+    user_repo = db_session.users
     form = RegisterForm(request.form, users=user_repo.list())
     if request.method == "POST" and form.validate():
         user = user_repo.create_user(form.username.data, form.password.data)
