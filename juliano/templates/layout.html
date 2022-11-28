@@ -8,7 +8,11 @@
       <div class="whitespace-no-wrap">
         Hallo, <span class="font-semibold text-indigo-700">{{ current_user.username }}</span>!
       </div>
-      <div>
+      <div class="space-x-2 flex flex-row">
+	<a class="hover:text-indigo-700 hover:underline"
+	   href="{{ url_for('settings')}}">
+	  Einstellungen
+	</a>
         <a class="hover:text-indigo-700 hover:underline"
            href="{{ url_for('logout') }}">
           Abmelden

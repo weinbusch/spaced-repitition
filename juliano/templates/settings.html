@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% from "_forms.html" import render_form %}
+
+{% block main %}
+<div class="mt-2">
+  <a href="{{ url_for('index') }}"
+     class="p-4 block rounded-full leading-none bg-indigo-500 text-gray-100">
+    <span class="mr-2">&#12296;</span>
+    Zurück zur Startseite
+  </a>
+</div>
+
+<h1 class="mt-8 text-lg font-semibold text-indigo-700">Einstellungen</h1>
+
+{{ render_form(form) }}
+
+{% endblock %}
+

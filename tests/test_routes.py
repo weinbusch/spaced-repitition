@@ -166,3 +166,21 @@ def test_item_activate_reject_unauthorized_user(flask_token_client, session):
         url_for("item_activate", item_id=1), json={"is_active": False}
     )
     assert response.status_code == 403
+
+
+def test_user_settings(flask_client):
+    response = flask_client.get(url_for("settings"))
+    assert response.status_code == 200
+
+
+def test_change_user_settings(flask_client, superuser, session):
+    assert superuser.settings.max_todo == 10
+    response = flask_client.post(
+        url_for("settings"),
+        data={
+            "max_todo": "20",
+        },
+    )
+    assert response.status_code == 302
+    session.refresh(superuser)
+    assert superuser.settings.max_todo == 20

@@ -2,7 +2,7 @@ import sqlalchemy as sa
 from sqlalchemy.orm import mapper, relationship
 
 from juliano.domain import Item, Event
-from juliano.auth import User
+from juliano.auth import User, Settings
 
 metadata = sa.MetaData()
 
@@ -14,6 +14,14 @@ user_table = sa.Table(
     sa.Column("password_hash", sa.Text),
     sa.Column("token", sa.Text, index=True, unique=True),
     sa.Column("token_expires", sa.DateTime),
+)
+
+settings_table = sa.Table(
+    "settings",
+    metadata,
+    sa.Column("id", sa.Integer, primary_key=True),
+    sa.Column("user_id", sa.Integer, sa.ForeignKey("users.id"), unique=True),
+    sa.Column("max_todo", sa.Integer, default=10),
 )
 
 item_table = sa.Table(
@@ -50,4 +58,7 @@ def init_mappers():
         },
     )
     mapper(Event, event_table)
-    mapper(User, user_table)
+    mapper(
+        User, user_table, properties={"settings": relationship(Settings, uselist=False)}
+    )
+    mapper(Settings, settings_table)

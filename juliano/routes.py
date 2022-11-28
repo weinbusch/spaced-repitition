@@ -15,7 +15,7 @@ from flask_login import login_required, login_user, logout_user, current_user
 
 from juliano.db import db_session
 from juliano.domain import Item, filter_todo_items
-from juliano.forms import ItemForm, TrainForm, LoginForm, RegisterForm
+from juliano.forms import ItemForm, TrainForm, LoginForm, RegisterForm, SettingsForm
 from juliano.calendar import get_weekly_word_calendar
 from juliano.images import filenames
 
@@ -69,7 +69,7 @@ def index():
         return redirect(url_for("index"))
     items = repo.list(current_user)
     calendar = get_weekly_word_calendar(items)
-    todo_items = filter_todo_items(items, n=10)
+    todo_items = filter_todo_items(items, n=current_user.settings.max_todo)
     return render_template(
         "index.html", items=items, form=form, todo_items=todo_items, calendar=calendar
     )
@@ -103,13 +103,26 @@ def item_activate(item_id):
 def train():
     repo = db_session.items
     items = repo.list(current_user)
-    items = filter_todo_items(items, n=10)
+    items = filter_todo_items(items, n=current_user.settings.max_todo)
     form = TrainForm(request.form)
     if items and request.method == "POST" and form.validate():
         items[0].train(**form.data)
         db_session.commit()
         return redirect(url_for("train"))
     return render_template("train.html", items=items, form=form)
+
+
+@router.route("/settings", methods=["GET", "POST"])
+@login_required
+def settings():
+    form = SettingsForm(request.form, obj=current_user.settings)
+    if request.method == "POST" and form.validate():
+        user_repo = db_session.users
+        form.populate_obj(current_user.settings)
+        user_repo.add(current_user)
+        db_session.commit()
+        return redirect(url_for("settings"))
+    return render_template("settings.html", form=form)
 
 
 @router.route("/login", methods=["GET", "POST"])

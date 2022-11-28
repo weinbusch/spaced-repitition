@@ -5,7 +5,7 @@ import contextlib
 from sqlalchemy import event
 from sqlalchemy.exc import IntegrityError
 
-from juliano.repo import ItemRepository
+from juliano.repo import ItemRepository, UserRepository
 from juliano.domain import Item
 from juliano.auth import User
 
@@ -139,3 +139,33 @@ def test_repo_issues_one_select_statement(engine, session):
         items = repo.list(user=user)
         assert all(item.events for item in items)
         assert len(stmts) == 1
+
+
+def test_user_repository_create_user(session):
+    repo = UserRepository(session)
+    repo.create_user(username="foo", password="1234")
+    session.commit()
+
+    assert repo.get(1).username == "foo"
+
+
+def test_user_repository_settings(session):
+    repo = UserRepository(session)
+    repo.create_user(username="foo", password="1234")
+    session.commit()
+
+    user = repo.get(1)
+    user.settings.max_todo = 20
+    repo.add(user)
+    session.commit()
+
+    assert repo.get(1).settings.max_todo == 20
+
+
+def test_user_repository_default_settings(session):
+    repo = UserRepository(session)
+    repo.create_user(username="foo", password="1234")
+    session.commit()
+
+    assert repo.get(1).settings is not None
+    assert repo.get(1).settings.max_todo == 10

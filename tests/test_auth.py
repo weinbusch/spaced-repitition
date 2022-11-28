@@ -221,3 +221,8 @@ def test_get_user_from_expired_token(session):
     session.commit()
 
     assert get_user_from_token(session, user.token) is None
+
+
+def test_user_settings():
+    user = User(username="foo")
+    assert user.settings.max_todo == 10

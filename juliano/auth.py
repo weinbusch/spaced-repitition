@@ -6,12 +6,18 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
+class Settings:
+    def __init__(self):
+        self.max_todo = 10
+
+
 class User(UserMixin):
     def __init__(self, username=None, password_hash=None, id=None):
         self.id = id
         self.username = username
         self.password_hash = password_hash
         self.token = None
+        self.settings = Settings()
 
     def get_token(self):
         now = datetime.datetime.utcnow()

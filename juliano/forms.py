@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, RadioField, PasswordField
+from wtforms import Form, StringField, RadioField, PasswordField, IntegerField
 from wtforms.validators import InputRequired, EqualTo, ValidationError, Length
 
 
@@ -89,4 +89,11 @@ class RegisterForm(Form):
             InputRequired(),
             EqualTo("password", message="Die Passwörter müssen übereinstimmen."),
         ],
+    )
+
+
+class SettingsForm(Form):
+
+    max_todo = IntegerField(
+        "Maximale Anzahl von Übungen pro Tag", validators=[InputRequired()]
     )
