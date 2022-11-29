@@ -1,7 +1,6 @@
 from juliano.domain import Item
 from juliano.auth import (
     User,
-    get_user,
     get_user_from_token,
     get_authenticated_user,
 )
@@ -15,7 +14,7 @@ class UserRepository:
         self.session = session
 
     def get(self, id):
-        return get_user(self.session, id)
+        return self.session.query(User).get(id)
 
     def add(self, user):
         self.session.add(user)

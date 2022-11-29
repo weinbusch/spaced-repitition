@@ -53,10 +53,6 @@ def verify_password(hash, password):
     return check_password_hash(hash, password)
 
 
-def get_user(session, id):
-    return session.query(User).get(id)
-
-
 def get_user_from_token(session, token):
     now = datetime.datetime.utcnow()
     user = session.query(User).filter_by(token=token).one_or_none()
