@@ -17,14 +17,20 @@ class User(UserMixin):
         self.username = username
         self.password_hash = password_hash
         self.token = None
+        self.token_expires = None
         self.settings = Settings()
 
     def get_token(self):
         now = datetime.datetime.utcnow()
-        if not self.token or self.token_expires < now:
+        if not self.token or not self.token_expires or self.token_expires < now:
             self.token = secrets.token_hex(32)
             self.token_expires = now + datetime.timedelta(seconds=60 * 60 * 24)
         return self.token
+
+    @classmethod
+    def create_user(cls, username, password):
+        password_hash = create_password_hash(password)
+        return cls(username=username, password_hash=password_hash)
 
 
 def _validate_password(password):
@@ -45,11 +51,6 @@ def verify_password(hash, password):
     except ValueError:
         return False
     return check_password_hash(hash, password)
-
-
-def create_user(username, password):
-    password_hash = create_password_hash(password)
-    return User(username=username, password_hash=password_hash)
 
 
 def get_user(session, id):

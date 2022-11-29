@@ -4,7 +4,6 @@ from juliano.auth import (
     get_user,
     get_user_from_token,
     get_authenticated_user,
-    create_user,
 )
 from juliano.schema import init_mappers
 
@@ -25,7 +24,7 @@ class UserRepository:
         return get_user_from_token(self.session, token)
 
     def create_user(self, username, password):
-        user = create_user(username, password)
+        user = User.create_user(username, password)
         self.add(user)
         return user
 
