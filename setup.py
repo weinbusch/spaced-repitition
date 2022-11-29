@@ -5,5 +5,5 @@ setuptools.setup(
     version="0.0.1",
     author="Martin Bierbaum",
     packages=["juliano"],
-    python_requires='>=3.8',
+    python_requires=">=3.8",
 )
