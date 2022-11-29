@@ -22,10 +22,14 @@ class User(UserMixin):
 
     def get_token(self):
         now = datetime.datetime.utcnow()
-        if not self.token or not self.token_expires or self.token_expires < now:
+        if self.token_is_expired():
             self.token = secrets.token_hex(32)
             self.token_expires = now + datetime.timedelta(seconds=60 * 60 * 24)
         return self.token
+
+    def token_is_expired(self):
+        now = datetime.datetime.utcnow()
+        return not self.token or self.token_expires is None or self.token_expires < now
 
     @classmethod
     def create_user(cls, username, password):

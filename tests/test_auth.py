@@ -12,6 +12,9 @@ from juliano.auth import (
 )
 
 
+# Flask tests
+
+
 @pytest.fixture(scope="module")
 def password_hash():
     yield generate_password_hash("password")
@@ -140,6 +143,9 @@ def test_register_long_password(flask_anonymous_client):
     assert "Das Passwort ist zu lang".encode("utf-8") in response.data
 
 
+# Repo tests
+
+
 def test_get_authenticated_user(session, password_hash):
     user = User(username="foo", password_hash=password_hash)
     session.add(user)
@@ -176,11 +182,24 @@ def test_get_authenticated_user_long_password(session, password_hash):
     assert authenticated_user is None
 
 
+# Model and domain tests
+
+
 def test_get_token():
     user = User()
     user.get_token()
     assert user.token is not None
     assert user.token_expires is not None
+
+
+def test_check_if_token_is_expired():
+    now = datetime.datetime.utcnow()
+    user = User()
+    user.get_token()
+    assert user.token_is_expired() is False
+
+    user.token_expires = now - datetime.timedelta(seconds=1)
+    assert user.token_is_expired() is True
 
 
 def test_get_expired_token():
