@@ -169,6 +169,43 @@ def test_user_repository_get_user_by_token(session):
     assert user is None
 
 
+def test_get_authenticated_user(session, password_hash):
+    repo = UserRepository(session)
+    user = User(username="foo", password_hash=password_hash)
+    repo.add(user)
+    session.commit()
+
+    authenticated_user = repo.get_authenticated_user(
+        username="foo", password="password"
+    )
+
+    assert authenticated_user.username == "foo"
+
+
+def test_get_authenticated_user_wrong_password(session, password_hash):
+    repo = UserRepository(session)
+    user = User(username="foo", password_hash=password_hash)
+    repo.add(user)
+    session.commit()
+
+    authenticated_user = repo.get_authenticated_user(
+        username="foo", password="wrong-password"
+    )
+
+    assert authenticated_user is None
+
+
+def test_get_authenticated_user_long_password(session, password_hash):
+    repo = UserRepository(session)
+    user = User(username="foo", password_hash=password_hash)
+    repo.add(user)
+    session.commit()
+
+    authenticated_user = repo.get_authenticated_user(username="foo", password="a" * 65)
+
+    assert authenticated_user is None
+
+
 def test_user_repository_settings(session):
     repo = UserRepository(session)
     repo.create_user(username="foo", password="1234")

@@ -1,22 +1,11 @@
 import datetime
 
-import pytest
-
 from flask import url_for
 
-from juliano.auth import (
-    User,
-    generate_password_hash,
-    get_authenticated_user,
-)
+from juliano.auth import User
 
 
 # Flask tests
-
-
-@pytest.fixture(scope="module")
-def password_hash():
-    yield generate_password_hash("password")
 
 
 def test_login_with_correct_credentials(flask_anonymous_client, session, password_hash):
@@ -142,46 +131,13 @@ def test_register_long_password(flask_anonymous_client):
     assert "Das Passwort ist zu lang".encode("utf-8") in response.data
 
 
-# Repo tests
-
-
-def test_get_authenticated_user(session, password_hash):
-    user = User(username="foo", password_hash=password_hash)
-    session.add(user)
-    session.commit()
-
-    authenticated_user = get_authenticated_user(
-        session, username="foo", password="password"
-    )
-
-    assert authenticated_user == user
-
-
-def test_get_authenticated_user_wrong_password(session, password_hash):
-    user = User(username="foo", password_hash=password_hash)
-    session.add(user)
-    session.commit()
-
-    authenticated_user = get_authenticated_user(
-        session, username="foo", password="wrong-password"
-    )
-
-    assert authenticated_user is None
-
-
-def test_get_authenticated_user_long_password(session, password_hash):
-    user = User(username="foo", password_hash=password_hash)
-    session.add(user)
-    session.commit()
-
-    authenticated_user = get_authenticated_user(
-        session, username="foo", password="a" * 65
-    )
-
-    assert authenticated_user is None
-
-
 # Model and domain tests
+
+
+def test_verify_password():
+    user = User.create_user(username="foo", password="1234")
+    assert user.verify_password("1234") is True
+    assert user.verify_password("123$") is False
 
 
 def test_get_token():

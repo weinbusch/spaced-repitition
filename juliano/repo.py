@@ -1,8 +1,5 @@
 from juliano.domain import Item
-from juliano.auth import (
-    User,
-    get_authenticated_user,
-)
+from juliano.auth import User
 from juliano.schema import init_mappers
 
 init_mappers()
@@ -30,7 +27,10 @@ class UserRepository:
         return user
 
     def get_authenticated_user(self, username, password):
-        return get_authenticated_user(self.session, username, password)
+        user = self.session.query(User).filter(User.username == username).one_or_none()
+        if user and user.verify_password(password):
+            return user
+        return None
 
     def list(self):
         return self.session.query(User).all()

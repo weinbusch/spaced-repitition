@@ -31,9 +31,12 @@ class User(UserMixin):
         now = datetime.datetime.utcnow()
         return not self.token or self.token_expires is None or self.token_expires < now
 
+    def verify_password(self, password):
+        return _verify_password(self.password_hash, password)
+
     @classmethod
     def create_user(cls, username, password):
-        password_hash = create_password_hash(password)
+        password_hash = _create_password_hash(password)
         return cls(username=username, password_hash=password_hash)
 
 
@@ -44,21 +47,14 @@ def _validate_password(password):
         )
 
 
-def create_password_hash(password):
+def _create_password_hash(password):
     _validate_password(password)
     return generate_password_hash(password, salt_length=16)
 
 
-def verify_password(hash, password):
+def _verify_password(hash, password):
     try:
         _validate_password(password)
     except ValueError:
         return False
     return check_password_hash(hash, password)
-
-
-def get_authenticated_user(session, username, password):
-    user = session.query(User).filter(User.username == username).one_or_none()
-    if user and verify_password(user.password_hash, password):
-        return user
-    return None

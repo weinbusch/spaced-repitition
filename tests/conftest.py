@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from juliano.app import create_app
-from juliano.auth import User
+from juliano.auth import User, generate_password_hash
 from juliano.schema import metadata
 
 
@@ -81,3 +81,8 @@ def flask_client(flask_anonymous_client, superuser):
         sess["_user_id"] = superuser.get_id()
         sess["_fresh"] = True
     return flask_anonymous_client
+
+
+@pytest.fixture(scope="session")
+def password_hash():
+    yield generate_password_hash("password")
