@@ -57,14 +57,6 @@ def verify_password(hash, password):
     return check_password_hash(hash, password)
 
 
-def get_user_from_token(session, token):
-    now = datetime.datetime.utcnow()
-    user = session.query(User).filter_by(token=token).one_or_none()
-    if user and user.token_expires < now:
-        return None
-    return user
-
-
 def get_authenticated_user(session, username, password):
     user = session.query(User).filter(User.username == username).one_or_none()
     if user and verify_password(user.password_hash, password):

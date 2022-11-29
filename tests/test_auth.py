@@ -7,7 +7,6 @@ from flask import url_for
 from juliano.auth import (
     User,
     generate_password_hash,
-    get_user_from_token,
     get_authenticated_user,
 )
 
@@ -210,36 +209,6 @@ def test_get_expired_token():
     t2 = user.get_token()
     assert t1 != t2
     assert t2 == user.token
-
-
-def test_get_user_from_token(session):
-    user = User()
-    user.get_token()
-    session.add(user)
-    session.commit()
-
-    assert get_user_from_token(session, user.token) == user
-
-
-def test_get_user_from_wrong_token(session):
-    user = User()
-    user.get_token()
-    session.add(user)
-    session.commit()
-
-    assert get_user_from_token(session, "foo") is None
-
-
-def test_get_user_from_expired_token(session):
-    now = datetime.datetime.utcnow()
-
-    user = User()
-    user.get_token()
-    user.token_expires = now - datetime.timedelta(seconds=1)
-    session.add(user)
-    session.commit()
-
-    assert get_user_from_token(session, user.token) is None
 
 
 def test_user_settings():

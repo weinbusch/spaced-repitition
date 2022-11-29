@@ -1,7 +1,6 @@
 from juliano.domain import Item
 from juliano.auth import (
     User,
-    get_user_from_token,
     get_authenticated_user,
 )
 from juliano.schema import init_mappers
@@ -20,7 +19,10 @@ class UserRepository:
         self.session.add(user)
 
     def get_from_token(self, token):
-        return get_user_from_token(self.session, token)
+        user = self.session.query(User).filter(User.token == token).one_or_none()
+        if user and not user.token_is_expired():
+            return user
+        return None
 
     def create_user(self, username, password):
         user = User.create_user(username, password)

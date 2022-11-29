@@ -149,6 +149,26 @@ def test_user_repository_create_user(session):
     assert repo.get(1).username == "foo"
 
 
+def test_user_repository_get_user_by_token(session):
+    repo = UserRepository(session)
+    user = User()
+    token = user.get_token()
+    repo.add(user)
+    session.commit()
+
+    user = repo.get_from_token("wrong-token")
+    assert user is None
+
+    user = repo.get_from_token(token)
+    assert user is not None
+    user.token_expires = datetime.datetime.utcnow() - datetime.timedelta(seconds=1)
+    repo.add(user)
+    session.commit()
+
+    user = repo.get_from_token(token)
+    assert user is None
+
+
 def test_user_repository_settings(session):
     repo = UserRepository(session)
     repo.create_user(username="foo", password="1234")
