@@ -8,6 +8,9 @@ from juliano.auth import User
 now = datetime.datetime.utcnow()
 
 
+# Index view
+
+
 def test_index_redirects_anonymous_user(flask_anonymous_client):
     response = flask_anonymous_client.get(url_for("index"))
     assert response.status_code == 302
@@ -24,11 +27,7 @@ def test_index_view_create_item(flask_client, session):
     assert session.query(Item).filter_by(word="foo").count() == 1
 
 
-def test_create_item_with_very_long_word(flask_client, session):
-    response = flask_client.post(
-        url_for("index"), data={"word": "a very long word" * 1000}
-    )
-    assert response.status_code == 200
+# List view
 
 
 def test_items_list_view(superuser, flask_client, session):
@@ -37,6 +36,9 @@ def test_items_list_view(superuser, flask_client, session):
     response = flask_client.get(url_for("item_list"))
     assert response.status_code == 200
     assert b"foobarbaz" in response.data
+
+
+# Train view
 
 
 def test_train_view_shows_next_item(superuser, flask_client, session):
@@ -115,6 +117,9 @@ def test_train_view_if_no_items_are_pending(flask_client):
     assert response.status_code == 200
 
 
+# Activate API view
+
+
 def test_item_activate(superuser, flask_token_client, session):
     item = Item(id=1, user=superuser, word="foo")
     session.add(item)
@@ -168,6 +173,9 @@ def test_item_activate_reject_unauthorized_user(flask_token_client, session):
     assert response.status_code == 403
 
 
+# Settings view
+
+
 def test_user_settings(flask_client):
     response = flask_client.get(url_for("settings"))
     assert response.status_code == 200
@@ -184,3 +192,66 @@ def test_change_user_settings(flask_client, superuser, session):
     assert response.status_code == 302
     session.refresh(superuser)
     assert superuser.settings.max_todo == 20
+
+
+# Auth views
+
+
+def test_login_with_correct_credentials(flask_anonymous_client, session, password_hash):
+    user = User(username="foo", password_hash=password_hash)
+    session.add(user)
+    session.commit()
+
+    response = flask_anonymous_client.post(
+        url_for("login"), data={"username": "foo", "password": "password"}
+    )
+
+    assert response.status_code == 302
+
+
+def test_login_with_wrong_username(flask_anonymous_client, session, password_hash):
+    user = User(username="foo", password_hash=password_hash)
+    session.add(user)
+    session.commit()
+
+    response = flask_anonymous_client.post(
+        url_for("login"), data={"username": "bar", "password": "password"}
+    )
+
+    assert response.status_code == 200
+
+
+def test_login_with_wrong_password(flask_anonymous_client, session, password_hash):
+    user = User(username="foo", password_hash=password_hash)
+    session.add(user)
+    session.commit()
+
+    response = flask_anonymous_client.post(
+        url_for("login"), data={"username": "foo", "password": "wrong-password"}
+    )
+
+    assert response.status_code == 200
+
+
+def test_register_user(flask_anonymous_client, session):
+    response = flask_anonymous_client.post(
+        url_for("register"),
+        data={
+            "username": "foo",
+            "password": "password",
+            "repeat_password": "password",
+        },
+    )
+    assert response.status_code == 302
+    assert session.query(User).first().username == "foo"
+
+
+def test_register_view_opt_out(flask_anonymous_client):
+    flask_anonymous_client.application.config["REGISTER_VIEW"] = False
+    response = flask_anonymous_client.get(url_for("register"))
+    assert response.status_code == 404
+    response = flask_anonymous_client.post(
+        url_for("register"),
+        data={"username": "foo", "password": "bar", "repeat_password": "bar"},
+    )
+    assert response.status_code == 404
