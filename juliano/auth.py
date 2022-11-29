@@ -12,8 +12,8 @@ class Settings:
 
 
 class User(UserMixin):
-    def __init__(self, username=None, password_hash=None, id=None):
-        self.id = id
+    def __init__(self, username=None, password_hash=None):
+        self.id = None
         self.username = username
         self.password_hash = password_hash
         self.token = None

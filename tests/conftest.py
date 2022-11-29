@@ -39,7 +39,7 @@ def session(database):
 
 @pytest.fixture()
 def superuser(session):
-    user = User(id=1, username="foo")
+    user = User(username="foo")
     user.get_token()
     session.add(user)
     session.commit()

@@ -63,7 +63,7 @@ def test_train_view_cycles_through_pending_items(superuser, flask_client, sessio
     url = url_for("train")
     now = datetime.datetime.utcnow()
 
-    other_user = User(id=2)
+    other_user = User()
 
     session.add_all(
         [
