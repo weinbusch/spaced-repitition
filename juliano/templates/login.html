@@ -6,30 +6,28 @@
 <form action="" method="POST">
   <div class="flex flex-col">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <h1 class="text-indigo-700 text-4xl text-center leading-tight">
+    <h1 class="text-indigo-500 text-4xl text-center">
       Willkommen bei Juliano!
     </h1>
-    <p class="mt-8 leading-tight">
+    <p class="mt-8">
       {% block instructions %}Bitte gib Deine Zugangsdaten ein, um Dich anzumelden:{% endblock %}
     </p>
     {{ render_form_fields(form) }}
     {% for message in get_flashed_messages(category_filter=["login_error"]) %}
-    <p class="mt-4 text-red-700 leading-tight">
+    <p class="mt-4 text-red-700">
       {{ message }}
     </p>
     {% endfor %}
     <div class="mt-8 flex flex-col sm:flex-row justify-center items-center">
       <button type="submit"
-              class="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-full cursor-pointer
-                     leading-tight">
+              class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full cursor-pointer">
         {% block submit_action %}Anmelden{% endblock %}
       </button>
       {% if config.get("REGISTER_VIEW", False) %}
       <span class="m-2 whitespace-nowrap italic">
         - oder -
       </span>
-      <a class="px-4 p-2 bg-green-500 hover:bg-green-600 text-white rounded-full cursor-pointer
-                text-center leading-tight"
+      <a class="px-4 p-2 bg-green-500 hover:bg-green-600 text-white rounded-full cursor-pointer text-center"
          href="{% block alternative_url %}{{ url_for('register') }}{% endblock %}">
         {% block alternative_action %}Neues Konto anlegen{% endblock %}
       </a>
