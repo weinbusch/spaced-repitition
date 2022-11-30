@@ -71,16 +71,16 @@ class Item:
 
     @property
     def todo(self):
+        today = datetime.datetime.utcnow().date()
         return self.is_active and (
-            self.next_iteration is None
-            or (self.next_iteration.date() <= datetime.date.today())
+            self.next_iteration is None or (self.next_iteration.date() <= today)
         )
 
 
 def filter_todo_items(items, n=None):
     todos = [item for item in items if item.todo]
     if n:
-        today = datetime.date.today()
+        today = datetime.datetime.utcnow().date()
         trained_today = len(
             [
                 item
