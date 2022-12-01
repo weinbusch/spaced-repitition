@@ -98,18 +98,40 @@ def item_activate(item_id):
     return jsonify(item.to_dict())
 
 
-@router.route("/train", methods=["GET", "POST"])
+@router.route("/train", methods=["GET"])
 @login_required
 def train():
+    "Train dispatch view"
     repo = db_session.items
     items = repo.list(current_user)
-    items = filter_todo_items(items, n=current_user.settings.max_todo)
+    todo_items = filter_todo_items(items, n=current_user.settings.max_todo)
+    if todo_items:
+        item = todo_items[0]
+        return redirect(url_for("train_item", id=item.id))
+
+    return render_template("training_complete.html")
+
+
+@router.route("/train/<id>", methods=["GET", "POST"])
+def train_item(id):
+    item = db_session.items.get(id)
+    if not item or item.user != current_user:
+        return abort(404)
+    if not item.todo:
+        return render_template("train_error.html", item=item)
     form = TrainForm(request.form)
-    if items and request.method == "POST" and form.validate():
-        items[0].train(**form.data)
+    if request.method == "POST" and form.validate():
+        item.train(**form.data)
         db_session.commit()
+        items = db_session.items.list(current_user)
+        if todo_items := filter_todo_items(items, n=current_user.settings.max_todo):
+            return redirect(url_for("train_item", id=todo_items[0].id))
         return redirect(url_for("train"))
-    return render_template("train.html", items=items, form=form)
+    items = db_session.items.list(current_user)
+    todo_items = filter_todo_items(items, n=current_user.settings.max_todo)
+    return render_template(
+        "train_item.html", form=form, item=item, remaining=len(todo_items) - 1
+    )
 
 
 @router.route("/settings", methods=["GET", "POST"])

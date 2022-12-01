@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% from "_forms.html" import render_form %}
+
+{% block main %}
+<div class="mt-2">
+  <a href="{{ url_for('index') }}"
+     class="p-4 block rounded-full bg-indigo-500 text-gray-100">
+    <span class="mr-2">&#12296;</span>
+    Zurück zur Startseite
+  </a>
+</div>
+<h1 class="mt-4 text-lg text-indigo-500 text-center">Ups!</h1>
+<p class="mt-4">
+  Da ist es schiefgegangen. Dieses Wort kann gerade nicht mehr trainiert werden.
+  {% if item.is_active %}
+  Du hast dieses Wort zuletzt
+  <span moment-format="fromNow">
+    {{ item.last_learned.isoformat(timespec="seconds") }}
+  </span>
+  geübt und es ist erst wieder
+  <span moment-format="fromNow">
+    {{ item.next_iteration.isoformat(timespec="seconds") }}
+  </span>
+  fällig.
+  {% else %}
+  Dieses Wort ist inaktiv.
+  {% endif %}
+</p>
+<div class="mt-8 flex flex-row justify-around">
+  <a href="{{ url_for('train') }}"
+     class="px-4 p-2 rounded-full cursor-pointer inline-block
+	    bg-indigo-500 text-white hover:bg-indigo-600">
+    Weiter trainieren
+  </a>
+</div>
+{% endblock %}

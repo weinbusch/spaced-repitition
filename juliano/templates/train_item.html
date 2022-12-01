@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+{% from "_forms.html" import render_form %}
+
+{% block main %}
+<div class="mt-2">
+  <a href="{{ url_for('index') }}"
+     class="p-4 block rounded-full bg-indigo-500 text-gray-100">
+    <span class="mr-2">&#12296;</span>
+    Zurück zur Startseite
+  </a>
+</div>
+<form action="" method="POST">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <p class="mt-4 text-center">
+    Trainiere dieses Wort:
+  </p>
+  <p class="mt-4 text-center text-2xl font-medium text-indigo-500">
+    {{ item.word }}
+  </p>
+  {% if item.last_learned %}
+  <p class="mt-4 text-center text-sm text-gray-600">
+    <span moment-format="fromNow">
+      {{ item.last_learned.strftime("%Y-%m-%d %H:%M:%S") }}
+    </span> zuletzt geübt.
+  </p>
+  {% endif %}
+  <p class="mt-8 text-center">
+    Bewerte Deine Leistung:
+  </p>
+  <div class="mt-4 flex flex-row justify-center border border-indigo-500 rounded-md">
+    {% for radio in form.grade %}
+    <div class="grow border-l first:border-l-0 border-indigo-500">
+      {{ radio(class="peer hidden") }}
+      <label for={{ radio.id }}
+	     class="p-2 w-full block
+		    text-lg
+		    text-indigo-500
+		    peer-checked:bg-indigo-500 peer-checked:text-white
+		    hover:bg-indigo-500 hover:text-white
+		    text-center cursor-pointer">
+	{{ radio.label.text }}
+      </label>
+    </div>
+    {% endfor %}
+  </div>
+  {% for error in form.grade.errors %}
+  <p class="mt-4 text-center text-sm text-red-700 font-semibold">{{ error }}</p>
+  {% endfor %}
+  <p class="mt-4 text-center text-sm text-gray-600">
+    Je leichter Dir das Wort gefallen ist, um so größer die Zahl.
+  </p>
+  <div class="mt-8 flex justify-center items-center flex-col sm:flex-row">
+    <button type="submit"
+            class="px-4 p-2 rounded-full cursor-pointer
+		   border border-indigo-500
+                   bg-indigo-500 hover:bg-indigo-600 text-white">
+      Speichern und Weiter
+    </button>
+  </div>
+  {% if remaining %}
+  <div class="mt-4 text-center text-sm text-gray-700">
+    noch {{ remaining }} weitere
+  </div>
+  {% endif %}
+</form>
+{% endblock %}

@@ -1,11 +1,27 @@
+import contextlib
 import datetime
 
-from flask import url_for
+from flask import url_for, template_rendered, current_app
 
 from juliano.domain import Item
 from juliano.auth import User
 
 now = datetime.datetime.utcnow()
+
+
+# Helpers
+
+
+@contextlib.contextmanager
+def templates_used(app):
+    templates = []
+
+    def record(sender, template, context, **extra):
+        templates.append(template.name)
+
+    template_rendered.connect(record, app)
+    yield templates
+    template_rendered.disconnect(record, app)
 
 
 # Index view
@@ -41,80 +57,94 @@ def test_items_list_view(superuser, flask_client, session):
 # Train view
 
 
-def test_train_view_shows_next_item(superuser, flask_client, session):
-    session.add(Item(user=superuser, word="foobarbaz", next_iteration=now))
-    session.commit()
-    response = flask_client.get(url_for("train"))
-    assert response.status_code == 200
-    assert b"foobarbaz" in response.data
-
-
-def test_train_view_post_grade_increments_repitition_number(
-    superuser, flask_client, session
-):
+def test_train_dispatch_view_redirects(superuser, flask_client, session):
     item = Item(user=superuser, word="foo", next_iteration=now)
     session.add(item)
     session.commit()
-    response = flask_client.post(url_for("train"), data={"grade": "5"})
-    session.refresh(item)
+
+    response = flask_client.get(url_for("train"))
+
     assert response.status_code == 302
-    assert item.repitition_number == 1
+    assert response.location.endswith(url_for("train_item", id=item.id))
 
 
-def test_train_view_cycles_through_pending_items(superuser, flask_client, session):
-    url = url_for("train")
-    now = datetime.datetime.utcnow()
+def test_train_dispatch_view_if_no_items_left(flask_app, flask_client, session):
+    with templates_used(flask_app) as templates:
+        response = flask_client.get(url_for("train"))
 
-    other_user = User()
+    assert response.status_code == 200
+    assert "training_complete.html" in templates
 
-    session.add_all(
-        [
-            Item(
-                user=superuser,
-                word="barbazfoo",
-                next_iteration=now - datetime.timedelta(days=2),
-            ),
-            Item(
-                user=superuser,
-                word="bazfoobar",
-                next_iteration=now - datetime.timedelta(days=1),
-            ),
-            other_user,
-            Item(
-                user=other_user,  # this item should be skipped!
-                word="foobarbaz",
-                next_iteration=now - datetime.timedelta(days=3),
-            ),
-        ]
-    )
+
+def test_train_item(superuser, flask_app, flask_client, session):
+    item = Item(user=superuser, word="foo", next_iteration=now)
+    session.add(item)
     session.commit()
 
-    response = flask_client.get(url)
-    assert b"barbazfoo" in response.data
-    assert b"foobarbaz" not in response.data
+    with templates_used(flask_app) as templates:
+        response = flask_client.get(url_for("train_item", id=item.id))
 
-    response = flask_client.post(url, data={"grade": "5"})
-    assert response.status_code == 302
-
-    response = flask_client.get(url)
-    assert b"bazfoobar" in response.data
-    assert b"foobarbaz" not in response.data
-
-    response = flask_client.post(url, data={"grade": "5"})
-    assert response.status_code == 302
-
-    response = flask_client.get(url)
-    assert b"foobarbaz" not in response.data
-
-
-def test_train_view_if_no_items_are_pending(flask_client):
-    url = url_for("train")
-
-    response = flask_client.get(url)
     assert response.status_code == 200
+    assert "train_item.html" in templates
 
-    response = flask_client.post(url, data={"grade": "5"})
+
+def test_train_item_not_found(flask_client):
+    response = flask_client.get(url_for("train_item", id=1))
+    assert response.status_code == 404
+
+
+def test_train_item_post_request(superuser, flask_client, session):
+    item = Item(user=superuser, word="foo", next_iteration=now)
+    session.add(item)
+    session.commit()
+
+    data = {"grade": "5"}
+    response = flask_client.post(url_for("train_item", id=item.id), data=data)
+    session.refresh(item)
+
+    assert response.status_code == 302
+    assert item.events[0].grade == 5
+
+
+def test_train_item_redirects_to_next_item(superuser, flask_client, session):
+    for word in ["foo", "bar"]:
+        item = Item(user=superuser, word=word, next_iteration=now)
+        session.add(item)
+    session.commit()
+
+    data = {"grade": 5}
+    response = flask_client.post(url_for("train_item", id=1), data=data)
+
+    assert response.status_code == 302
+    assert response.location.endswith(url_for("train_item", id=2))
+
+
+def test_train_last_item_redirects_to_dispatcher(superuser, flask_client, session):
+    item = Item(user=superuser, word="foo", next_iteration=now)
+    session.add(item)
+    session.commit()
+
+    data = {"grade": 5}
+    response = flask_client.post(url_for("train_item", id=1), data=data)
+
+    assert response.status_code == 302
+    assert response.location.endswith(url_for("train"))
+
+
+def test_train_item_returns_error_if_item_is_no_longer_due(
+    superuser, flask_app, flask_client, session
+):
+    item = Item(user=superuser, word="foo", next_iteration=now)
+    item.train(5)
+    session.add(item)
+    session.commit()
+
+    data = {"grade": 5}
+    with templates_used(flask_app) as templates:
+        response = flask_client.post(url_for("train_item", id=1), data=data)
+
     assert response.status_code == 200
+    assert "train_error.html" in templates
 
 
 # Activate API view
