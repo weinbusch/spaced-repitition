@@ -9,10 +9,13 @@
     Zurück zur Startseite
   </a>
 </div>
-<h1 class="mt-4 text-lg text-indigo-500 text-center">Ups!</h1>
+<h1 class="mt-4 text-2xl text-indigo-500 text-center">Ups!</h1>
 <p class="mt-4">
-  Da ist es schiefgegangen. Dieses Wort kann gerade nicht mehr trainiert werden.
+  Da ist etwas schiefgegangen. Dieses Wort kann gerade nicht mehr
+  trainiert werden.
+
   {% if item.is_active %}
+
   Du hast dieses Wort zuletzt
   <span moment-format="fromNow">
     {{ item.last_learned.isoformat(timespec="seconds") }}
@@ -28,7 +31,7 @@
 </p>
 <div class="mt-8 flex flex-row justify-around">
   <a href="{{ url_for('train') }}"
-     class="px-4 p-2 rounded-full cursor-pointer inline-block
+     class="px-4 p-3 rounded-full inline-block
 	    bg-indigo-500 text-white hover:bg-indigo-600">
     Weiter trainieren
   </a>

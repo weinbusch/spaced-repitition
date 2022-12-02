@@ -1,14 +1,7 @@
-{% extends "layout.html" %}
+{% extends "detail.html" %}
 {% from "_forms.html" import render_form %}
 
 {% block main %}
-<div class="mt-2">
-  <a href="{{ url_for('index') }}"
-     class="p-4 block rounded-full bg-indigo-500 text-gray-100">
-    <span class="mr-2">&#12296;</span>
-    Zurück zur Startseite
-  </a>
-</div>
 <form action="" method="POST">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <p class="mt-4 text-center">
@@ -49,11 +42,9 @@
   <p class="mt-4 text-center text-sm text-gray-600">
     Je leichter Dir das Wort gefallen ist, um so größer die Zahl.
   </p>
-  <div class="mt-8 flex justify-center items-center flex-col sm:flex-row">
+  <div class="mt-8 flex justify-center">
     <button type="submit"
-            class="px-4 p-2 rounded-full cursor-pointer
-		   border border-indigo-500
-                   bg-indigo-500 hover:bg-indigo-600 text-white">
+            class="px-8 py-3 inline-block rounded-full bg-indigo-500 hover:bg-indigo-600 text-white">
       Speichern und Weiter
     </button>
   </div>

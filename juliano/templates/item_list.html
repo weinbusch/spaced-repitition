@@ -1,50 +1,37 @@
-{% extends "layout.html" %}
+{% extends "detail.html" %}
 
 {% block main %}
-
-<div class="mt-2">
-  <a href="{{ url_for('index') }}"
-     class="p-4 block rounded-full bg-indigo-500 text-gray-100">
-    <span class="mr-2">&#12296;</span>
-    Zurück zur Startseite
-  </a>
-</div>
-
 {% if items %}
-
-<p class="mt-4">
+<div class="mt-4">
   Hier ist eine Liste der Begriffe, die Du bereits eingegeben hast:
-</p>
-<ul class="-m-2 mt-2 flex flex-wrap justify-between">
+</div>
+<ul class="mt-2 flex flex-wrap justify-between -m-2">
   {% for item in items %}
-  <li x-data='{{ item.to_dict() | tojson }}'>
+  <li x-data='{{ item.to_dict() | tojson }}'
+      class="grow m-2">
     <div x-on:click="patch_request('{{ url_for('item_activate', item_id=item.id) }}', {'is_active': !is_active}).then(data => is_active = data.is_active)"
-	 class=" m-2 p-2 flex flex-col flex-grow bg-gray-100 hover:ring rounded-lg cursor-pointer">
-      <p class="pb-1 border-b border-gray-300 text-center text-lg text-indigo-700">
+	 class="p-2 flex flex-col bg-gray-100 hover:ring rounded-lg cursor-pointer">
+      <div class="pb-1 border-b border-gray-300 text-center text-lg text-indigo-500">
 	{{ item.word }}
-      </p>
+      </div>
       <div class="mt-1 flex-grow flex flex-col items-center text-sm text-gray-600">
-	<div class="flex">
-          <p>
-            <span class="italic">N</span>
-            <span class="font-semibold">{{ item.repitition_number }}</span>
-          </p>
-          <p class="ml-2">
-            <span class="italic">E</span>
-            <span class="font-semibold">{{ "{:.3}".format(item.easiness_factor) }}</span>
-          </p>
+	<div>
+          <span class="italic">N</span>
+          <span class="font-semibold">{{ item.repitition_number }}</span>
+          <span class="italic">E</span>
+          <span class="font-semibold">{{ "{:.3}".format(item.easiness_factor) }}</span>
 	</div>
 	{% if item.last_learned %}
-	<p>
-          <span class="italic">zuletzt</span>
-          <span moment-format="fromNow">{{ item.last_learned.strftime("%Y-%m-%d %H:%M:%S") }}</span>
-	</p>
+	<div>
+          <span class="italic">geübt</span>
+          <span moment-format="fromNow">{{ item.last_learned.isoformat(timespec="minutes") }}</span>
+	</div>
 	{% endif %}
 	{% if item.next_iteration %}
-	<p>
-          <span class="italic">wieder</span>
-          <span class="font-semibold" moment-format="fromNow">{{ item.next_iteration.strftime("%Y-%m-%d %H:%M:%S") }}</span>
-	</p>
+	<div>
+          <span class="italic">fällig</span>
+          <span class="font-semibold" moment-format="fromNow">{{ item.next_iteration.isoformat(timespec="minutes") }}</span>
+	</div>
 	{% endif %}
       </div>
       <div class="mt-1 flex justify-center">
@@ -60,6 +47,6 @@
   {% endfor %}
 </ul>
 {% else %}
-<p class="mt-4">Du hast noch keine Begriffe eingegeben.</p>
+<div class="mt-4">Du hast noch keine Begriffe eingegeben.</div>
 {% endif %}
 {% endblock %}

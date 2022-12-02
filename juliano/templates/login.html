@@ -9,25 +9,25 @@
     <h1 class="text-indigo-500 text-4xl text-center">
       Willkommen bei Juliano!
     </h1>
-    <p class="mt-8">
+    <div class="mt-8">
       {% block instructions %}Bitte gib Deine Zugangsdaten ein, um Dich anzumelden:{% endblock %}
-    </p>
+    </div>
     {{ render_form_fields(form) }}
     {% for message in get_flashed_messages(category_filter=["login_error"]) %}
-    <p class="mt-4 text-red-700">
+    <div class="mt-4 text-red-700">
       {{ message }}
-    </p>
+    </div>
     {% endfor %}
-    <div class="mt-8 flex flex-col sm:flex-row justify-center items-center">
+    <div class="mt-8 flex flex-col justify-center items-center">
       <button type="submit"
-              class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full cursor-pointer">
+              class="p-3 px-8 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full">
         {% block submit_action %}Anmelden{% endblock %}
       </button>
       {% if config.get("REGISTER_VIEW", False) %}
       <span class="m-2 whitespace-nowrap italic">
         - oder -
       </span>
-      <a class="px-4 p-2 bg-green-500 hover:bg-green-600 text-white rounded-full cursor-pointer text-center"
+      <a class="p-3 px-8 bg-green-500 hover:bg-green-600 text-white rounded-full text-center whitespace-nowrap"
          href="{% block alternative_url %}{{ url_for('register') }}{% endblock %}">
         {% block alternative_action %}Neues Konto anlegen{% endblock %}
       </a>
