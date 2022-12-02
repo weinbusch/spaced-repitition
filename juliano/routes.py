@@ -1,3 +1,4 @@
+import datetime
 from functools import wraps
 
 from flask import (
@@ -51,6 +52,9 @@ class Router:
 
     def init_app(self, app):
         for rule, view_func, options in self.routes:
+            debug_only = options.pop("debug_only", False)
+            if debug_only and not app.config["DEBUG"]:
+                continue
             app.add_url_rule(rule, view_func=view_func, **options)
 
 
@@ -112,6 +116,12 @@ def train():
     return render_template("training_complete.html")
 
 
+@router.route("/test/train/complete", methods=["GET"], debug_only=True)
+@login_required
+def test_training_complete():
+    return render_template("training_complete.html")
+
+
 @router.route("/train/<id>", methods=["GET", "POST"])
 def train_item(id):
     item = db_session.items.get(id)
@@ -132,6 +142,15 @@ def train_item(id):
     return render_template(
         "train_item.html", form=form, item=item, remaining=len(todo_items) - 1
     )
+
+
+@router.route("/test/train/error", methods=["GET"], debug_only=True)
+@login_required
+def test_training_error():
+    item = Item()
+    item.train(5)
+    item.events[0].created = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    return render_template("train_error.html", item=item)
 
 
 @router.route("/settings", methods=["GET", "POST"])
