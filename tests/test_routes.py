@@ -43,6 +43,14 @@ def test_index_view_create_item(flask_client, session):
     assert session.query(Item).filter_by(word="foo").count() == 1
 
 
+def test_cannot_create_duplicate_words(flask_client, session):
+    response = flask_client.post(url_for("index"), data={"word": "foo"})
+    assert response.status_code == 302
+    response = flask_client.post(url_for("index"), data={"word": "foo"})
+    assert response.status_code == 200
+    assert session.query(Item).filter_by(word="foo").count() == 1
+
+
 # List view
 
 

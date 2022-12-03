@@ -65,7 +65,7 @@ router = Router()
 @login_required
 def index():
     repo = db_session.items
-    form = ItemForm(request.form, user=current_user, repo=repo)
+    form = ItemForm(request.form, user=current_user, items=repo.list(current_user))
     if request.method == "POST" and form.validate():
         item = Item(word=form.word.data, user=current_user)
         repo.add(item)
