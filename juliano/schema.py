@@ -28,7 +28,11 @@ item_table = sa.Table(
     "items",
     metadata,
     sa.Column("id", sa.Integer, primary_key=True),
-    sa.Column("user_id", sa.Integer, sa.ForeignKey("users.id")),
+    sa.Column(
+        "user_id",
+        sa.Integer,
+        sa.ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
     sa.Column("word", sa.Text),
     sa.Column("created", sa.DateTime),
     sa.Column("is_active", sa.Boolean),
@@ -42,7 +46,11 @@ event_table = sa.Table(
     "events",
     metadata,
     sa.Column("id", sa.Integer, primary_key=True),
-    sa.Column("item_id", sa.Integer, sa.ForeignKey("items.id")),
+    sa.Column(
+        "item_id",
+        sa.Integer,
+        sa.ForeignKey("items.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
     sa.Column("grade", sa.Integer),
     sa.Column("created", sa.DateTime),
 )
