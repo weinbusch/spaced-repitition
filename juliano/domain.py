@@ -8,16 +8,18 @@ class Event:
 
 
 class Item:
-    INCREMENT = dict(
-        [
-            (0, -0.8),
-            (1, -0.54),
-            (2, -0.32),
-            (3, -0.14),
-            (4, 0),
-            (5, 0.1),
-        ]
-    )
+    # INCREMENT = dict(
+    #     [
+    #         (0, -0.8),
+    #         (1, -0.54),
+    #         (2, -0.32),
+    #         (3, -0.14),
+    #         (4, 0),
+    #         (5, 0.1),
+    #     ]
+    # )
+
+    INTERVALS = (0, 1, 3, 7)
 
     def __init__(
         self, word=None, id=None, user=None, next_iteration=None, created=None
@@ -30,9 +32,7 @@ class Item:
         self.events = []
         self.easiness_factor = 2.5
         self.inter_repitition_interval = datetime.timedelta(days=1)
-        self.next_iteration = (
-            next_iteration or self.created + self.inter_repitition_interval
-        )
+        self.next_iteration = next_iteration or self.created
 
     def to_dict(self):
         return dict(id=self.id, word=self.word, is_active=self.is_active)
@@ -50,24 +50,32 @@ class Item:
         self.events.append(event)
         return event
 
-    def train(self, grade):
-        """Spaced repitition algorithm
+    def train(self, grade, date=None):
+        event = self.add_event(grade, date)
 
-        https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm
-        """
-        event = self.add_event(grade)
+        try:
+            interval = self.INTERVALS[self.repitition_number]
+        except IndexError:
+            interval = max(self.INTERVALS)
+        self.next_iteration = event.created + datetime.timedelta(days=interval)
 
-        if self.repitition_number > 2:
-            self.inter_repitition_interval = (
-                self.inter_repitition_interval * self.easiness_factor
-            )
+        # """Spaced repitition algorithm
 
-        self.easiness_factor += self.INCREMENT[grade]
+        # https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm
+        # """
+        # event = self.add_event(grade, date)
 
-        if self.easiness_factor < 1.3:
-            self.easiness_factor = 1.3
+        # if self.repitition_number > 2:
+        #     self.inter_repitition_interval = (
+        #         self.inter_repitition_interval * self.easiness_factor
+        #     )
 
-        self.next_iteration = event.created + self.inter_repitition_interval
+        # self.easiness_factor += self.INCREMENT[grade]
+
+        # if self.easiness_factor < 1.3:
+        #     self.easiness_factor = 1.3
+
+        # self.next_iteration = event.created + self.inter_repitition_interval
 
     @property
     def todo(self):
@@ -77,8 +85,13 @@ class Item:
         )
 
 
-def filter_todo_items(items, n=None):
-    todos = [item for item in items if item.todo]
+def filter_todo_items(items, n=None, max_trainings=None):
+    todos = [
+        item
+        for item in items
+        if item.todo
+        and (max_trainings is None or item.repitition_number <= max_trainings)
+    ]
     if n:
         today = datetime.datetime.utcnow().date()
         trained_today = len(

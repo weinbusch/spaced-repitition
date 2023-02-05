@@ -8,7 +8,11 @@ now = datetime.datetime.utcnow()
 def test_create_item():
     item = Item(word="foo")
     assert item.is_active is True
-    assert item.next_iteration > now
+
+
+def test_next_iteration_is_now():
+    item = Item(word="foo")
+    assert item.next_iteration - now < datetime.timedelta(seconds=5)
 
 
 def test_item_to_dict():
@@ -50,7 +54,7 @@ def test_item_last_trained_calculated_based_on_events(session):
     assert item.last_learned == now
 
 
-def test_item_train_creates_event():
+def test_item_train_creates_event_with_timestamp():
     item = Item(word="foo")
     item.train(5)
     event = item.events[0]
@@ -74,7 +78,7 @@ def test_item_train_sets_next_iteration():
         (None, True),
     ],
 )
-def test_item_todo(date, todo):
+def test_item_todo_based_on_next_iteration_date(date, todo):
     item = Item(word="foo")
     item.next_iteration = date
     assert item.todo == todo
@@ -112,3 +116,32 @@ def test_filter_todo_items_max_number_takes_events_into_account():
     # items
     todo_items = filter_todo_items(items, n=10)
     assert len(todo_items) == 9
+
+
+def test_filter_todo_items_by_max_trainings():
+    one_year_ago = now - datetime.timedelta(days=365)
+    i1 = Item(word="foo", created=one_year_ago)
+    for _ in range(4):
+        i1.train(3, i1.next_iteration)
+    i2 = Item(word="bar")
+    for _ in range(5):
+        i2.train(3, i2.next_iteration)
+    todo_items = filter_todo_items([i1, i2], max_trainings=4)
+    assert len(todo_items) == 1
+    assert todo_items[0].word == "foo"
+
+
+def test_item_train_with_custom_creation_date():
+    item = Item(word="foo")
+    item.train(5, date=datetime.datetime(2022, 1, 1, 8, 0))
+    assert item.events[0].created == datetime.datetime(2022, 1, 1, 8, 0)
+    assert item.last_learned == datetime.datetime(2022, 1, 1, 8, 0)
+
+
+def test_item_fixed_training_intervals():
+    item = Item(word="foo")
+    date = datetime.datetime(2022, 1, 1, 8, 0)
+    for intervall in (1, 3, 7, 7, 7):
+        item.train(3, date)
+        assert item.next_iteration == date + datetime.timedelta(days=intervall)
+        date = item.next_iteration
