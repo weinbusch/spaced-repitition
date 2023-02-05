@@ -104,3 +104,10 @@ def filter_todo_items(items, n=None, max_trainings=None):
         limit = max(0, n - trained_today)
         return todos[0:limit]
     return todos
+
+
+def filter_todo_items_for_user(items, user):
+    settings = user.settings
+    return filter_todo_items(
+        items, n=settings.max_todo, max_trainings=settings.max_trainings
+    )
