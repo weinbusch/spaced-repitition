@@ -221,15 +221,18 @@ def test_user_settings(flask_client):
 
 def test_change_user_settings(flask_client, superuser, session):
     assert superuser.settings.max_todo == 10
+    assert superuser.settings.max_trainings == 4
     response = flask_client.post(
         url_for("settings"),
         data={
             "max_todo": "20",
+            "max_trainings": "10",
         },
     )
     assert response.status_code == 302
     session.refresh(superuser)
     assert superuser.settings.max_todo == 20
+    assert superuser.settings.max_trainings == 10
 
 
 # Auth views

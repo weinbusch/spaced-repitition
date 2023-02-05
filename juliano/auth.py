@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class Settings:
     def __init__(self):
         self.max_todo = 10
+        self.max_trainings = 4
 
 
 class User(UserMixin):

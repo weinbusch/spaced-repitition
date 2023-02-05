@@ -4,7 +4,14 @@ from sqlalchemy.orm import mapper, relationship
 from juliano.domain import Item, Event
 from juliano.auth import User, Settings
 
-metadata = sa.MetaData()
+naming_convention = {
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s",
+}
+
+metadata = sa.MetaData(naming_convention=naming_convention)
 
 user_table = sa.Table(
     "users",
@@ -22,6 +29,7 @@ settings_table = sa.Table(
     sa.Column("id", sa.Integer, primary_key=True),
     sa.Column("user_id", sa.Integer, sa.ForeignKey("users.id"), unique=True),
     sa.Column("max_todo", sa.Integer, default=10),
+    sa.Column("max_trainings", sa.Integer, default=4),
 )
 
 item_table = sa.Table(

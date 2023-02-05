@@ -97,3 +97,5 @@ class SettingsForm(Form):
     max_todo = IntegerField(
         "Maximale Anzahl von Übungen pro Tag", validators=[InputRequired()]
     )
+
+    max_trainings = IntegerField("Maximale Anzahl von Wiederholungen pro Wort")

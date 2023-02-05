@@ -73,7 +73,11 @@ def index():
         return redirect(url_for("index"))
     items = repo.list(current_user)
     calendar = get_weekly_word_calendar(items)
-    todo_items = filter_todo_items(items, n=current_user.settings.max_todo)
+    todo_items = filter_todo_items(
+        items,
+        n=current_user.settings.max_todo,
+        max_trainings=current_user.settings.max_trainings,
+    )
     return render_template(
         "index.html", items=items, form=form, todo_items=todo_items, calendar=calendar
     )
@@ -108,7 +112,11 @@ def train():
     "Train dispatch view"
     repo = db_session.items
     items = repo.list(current_user)
-    todo_items = filter_todo_items(items, n=current_user.settings.max_todo)
+    todo_items = filter_todo_items(
+        items,
+        n=current_user.settings.max_todo,
+        max_trainings=current_user.settings.max_trainings,
+    )
     if todo_items:
         item = todo_items[0]
         return redirect(url_for("train_item", id=item.id))
@@ -134,11 +142,19 @@ def train_item(id):
         item.train(**form.data)
         db_session.commit()
         items = db_session.items.list(current_user)
-        if todo_items := filter_todo_items(items, n=current_user.settings.max_todo):
+        if todo_items := filter_todo_items(
+            items,
+            n=current_user.settings.max_todo,
+            max_trainings=current_user.settings.max_trainings,
+        ):
             return redirect(url_for("train_item", id=todo_items[0].id))
         return redirect(url_for("train"))
     items = db_session.items.list(current_user)
-    todo_items = filter_todo_items(items, n=current_user.settings.max_todo)
+    todo_items = filter_todo_items(
+        items,
+        n=current_user.settings.max_todo,
+        max_trainings=current_user.settings.max_trainings,
+    )
     return render_template(
         "train_item.html", form=form, item=item, remaining=len(todo_items) - 1
     )

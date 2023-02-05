@@ -1,6 +1,8 @@
+import pytest
+
 from werkzeug.datastructures import MultiDict
 
-from juliano.forms import ItemForm, RegisterForm, LoginForm
+from juliano.forms import ItemForm, RegisterForm, LoginForm, SettingsForm
 from juliano.domain import Item
 from juliano.auth import User
 
@@ -72,3 +74,17 @@ def test_register_form_rejects_long_password():
     form = RegisterForm(data)
     assert form.validate() is False
     assert form.errors["password"]
+
+
+@pytest.mark.parametrize(
+    "max_trainings, max_todo, valid",
+    [
+        ("4", "10", True),
+        ("", "10", False),
+        ("4", "", False),
+    ],
+)
+def test_settings_form(max_trainings, max_todo, valid):
+    data = MultiDict(dict(max_trainings=max_trainings, max_todo=max_todo))
+    form = SettingsForm(data)
+    assert form.validate() is valid
