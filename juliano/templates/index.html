@@ -15,13 +15,25 @@
       <div class="text-sm">
         {% set count = todo_items | length %}
         {% if count == 1 %}
-        <span>{{ count }}</span> anstehende Übung.
+        Eine anstehende Übung.
         {% else %}
         <span>{{ count }}</span> anstehende Übungen.
         {% endif %}
       </div>
     </div>
   </a>
+  <div class="text-sm mt-4">
+    Die Anzahl der Übungen pro Tag ist zur Zeit auf
+    <span class="font-semibold">{{ current_user.settings.max_todo
+      }}</span> begrenzt. Sobald Du ein
+      Wort <span class="font-semibold">{{
+      current_user.settings.max_trainings }}</span> mal geübt hast,
+      wird es hier nicht mehr angezeigt. Du kannst diese Einstellungen
+    <a class="text-indigo-500 hover:underline"
+       href="{{ url_for('settings') }}">
+      hier
+    </a> ändern.
+
 </h1>
 
 <div class="mt-6 text-center text-gray-600 italic">

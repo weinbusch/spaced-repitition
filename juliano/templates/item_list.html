@@ -3,7 +3,10 @@
 {% block main %}
 {% if items %}
 <div class="mt-4">
-  Hier ist eine Liste der Begriffe, die Du bereits eingegeben hast:
+  Hier ist eine Liste der Wörter, die Du bereits eingegeben hast. Du
+  kannst auf ein Wort klicken, um es zu inaktivieren bzw. wieder zu
+  aktiveren. Inaktive Wörter werden nicht auf der Startseite
+  angezeigt.
 </div>
 <ul class="mt-2 flex flex-wrap justify-between -m-2">
   {% for item in items %}
